@@ -1,3 +1,4 @@
+
 /*
  * Copyright (C) 2006 The Android Open Source Project
  *
@@ -4136,6 +4137,13 @@ public final class Settings {
          * @hide
          */
         public static final String ALLOW_SIGNATURE_FAKE = "allow_signature_fake";
+
+        /**
+
+         * Launch actions for left/right lockscreen targets
+         * @hide
+         */
+        public static final String LOCKSCREEN_TARGETS = "lockscreen_target_actions";
 
         /**
          * Comma-separated list of location providers that activities may access. Do not rely on
