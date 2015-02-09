@@ -1550,7 +1550,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
         mTriplePressOnPowerBehavior = mContext.getResources().getInteger(
                 com.android.internal.R.integer.config_triplePressOnPowerBehavior);
         // Qemu Hw Mainkeys
-        mQemuHwMainkeysMusic = (SystemProperties.getInt("qemu.hw.mainkeys.music", QEMU_HW_MAINKEYS_MUSIC) == QEMU_HW_MAINKEYS_MUSIC);
+        mQemuHwMainkeysMusic = (SystemProperties.getInt("persist.qemu.hw.mainkeys_music", QEMU_HW_MAINKEYS_MUSIC) == QEMU_HW_MAINKEYS_MUSIC);
 
         mAccessibilityManager = (AccessibilityManager) context.getSystemService(
                 Context.ACCESSIBILITY_SERVICE);
