@@ -624,7 +624,7 @@ static void android_hardware_Camera_setPreviewSurface(JNIEnv *env, jobject thiz,
         }
     }
 
-    if (camera->setPreviewTarget(gbp) != NO_ERROR) {
+    if (camera->setPreviewTexture(gbp) != NO_ERROR) {
         jniThrowException(env, "java/io/IOException", "setPreviewTexture failed");
     }
 }
@@ -647,7 +647,7 @@ static void android_hardware_Camera_setPreviewTexture(JNIEnv *env,
 
     }
 
-    if (camera->setPreviewTarget(producer) != NO_ERROR) {
+    if (camera->setPreviewTexture(producer) != NO_ERROR) {
         jniThrowException(env, "java/io/IOException",
                 "setPreviewTexture failed");
     }
