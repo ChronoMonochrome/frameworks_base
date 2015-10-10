@@ -162,12 +162,9 @@ bool GLEnv::InitWithNewContext() {
   }
 
   // Create dummy surface using a GLConsumer
-  sp<IGraphicBufferProducer> producer;
-  sp<IGraphicBufferConsumer> consumer;
-  BufferQueue::createBufferQueue(&producer, &consumer);
-  surfaceTexture_ = new GLConsumer(consumer, 0, GLConsumer::TEXTURE_EXTERNAL,
-          true, false);
-  window_ = new Surface(producer);
+  sp<BufferQueue> bq = new BufferQueue();
+  surfaceTexture_ = new GLConsumer(bq, 0);
+  window_ = new Surface(static_cast<sp<IGraphicBufferProducer> >(bq));
 
   surfaces_[0] = SurfaceWindowPair(eglCreateWindowSurface(display(), config, window_.get(), NULL), NULL);
   if (CheckEGLError("eglCreateWindowSurface")) return false;
