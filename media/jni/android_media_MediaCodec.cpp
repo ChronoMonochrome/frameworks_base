@@ -325,8 +325,7 @@ status_t JMediaCodec::signalEndOfInputStream() {
 status_t JMediaCodec::getFormat(JNIEnv *env, bool input, jobject *format) const {
     sp<AMessage> msg;
     status_t err;
-    err = input ? mCodec->getInputFormat(&msg) : mCodec->getOutputFormat(&msg);
-    if (err != OK) {
+    if ((err = mCodec->getOutputFormat(&msg)) != OK) {
         return err;
     }
 
