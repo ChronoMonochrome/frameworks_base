@@ -753,9 +753,6 @@ static void throwCryptoException(JNIEnv *env, status_t err, const char *msg) {
         case ERROR_DRM_RESOURCE_BUSY:
             err = gCryptoErrorCodes.cryptoErrorResourceBusy;
             break;
-        case ERROR_DRM_INSUFFICIENT_OUTPUT_PROTECTION:
-            err = gCryptoErrorCodes.cryptoErrorInsufficientOutputProtection;
-            break;
         default:  /* Other negative DRM error codes go out as is. */
             break;
     }
