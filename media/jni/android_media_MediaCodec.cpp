@@ -312,11 +312,7 @@ status_t JMediaCodec::dequeueOutputBuffer(
     return OK;
 }
 
-status_t JMediaCodec::releaseOutputBuffer(
-        size_t index, bool render, bool updatePTS, int64_t timestampNs) {
-    if (updatePTS) {
-        return mCodec->renderOutputBufferAndRelease(index, timestampNs);
-    }
+status_t JMediaCodec::releaseOutputBuffer(size_t index, bool render) {
     return render
         ? mCodec->renderOutputBufferAndRelease(index)
         : mCodec->releaseOutputBuffer(index);
@@ -1164,8 +1160,7 @@ static jint android_media_MediaCodec_dequeueOutputBuffer(
 }
 
 static void android_media_MediaCodec_releaseOutputBuffer(
-        JNIEnv *env, jobject thiz,
-        jint index, jboolean render, jboolean updatePTS, jlong timestampNs) {
+        JNIEnv *env, jobject thiz, jint index, jboolean render) {
     ALOGV("android_media_MediaCodec_renderOutputBufferAndRelease");
 
     sp<JMediaCodec> codec = getMediaCodec(env, thiz);
@@ -1175,7 +1170,7 @@ static void android_media_MediaCodec_releaseOutputBuffer(
         return;
     }
 
-    status_t err = codec->releaseOutputBuffer(index, render, updatePTS, timestampNs);
+    status_t err = codec->releaseOutputBuffer(index, render);
 
     throwExceptionAsNecessary(env, err);
 }
@@ -1532,7 +1527,7 @@ static JNINativeMethod gMethods[] = {
     { "native_dequeueOutputBuffer", "(Landroid/media/MediaCodec$BufferInfo;J)I",
       (void *)android_media_MediaCodec_dequeueOutputBuffer },
 
-    { "releaseOutputBuffer", "(IZZJ)V",
+    { "releaseOutputBuffer", "(IZ)V",
       (void *)android_media_MediaCodec_releaseOutputBuffer },
 
     { "signalEndOfInputStream", "()V",
