@@ -14451,13 +14451,9 @@ package android.media {
     method public final void queueSecureInputBuffer(int, int, android.media.MediaCodec.CryptoInfo, long, int) throws android.media.MediaCodec.CryptoException;
     method public final void release();
     method public final void releaseOutputBuffer(int, boolean);
-<<<<<<< HEAD
     method public final void releaseOutputBuffer(int, long);
     method public final void reset();
     method public void setCallback(android.media.MediaCodec.Callback);
-=======
-    method public void setNotificationCallback(android.media.MediaCodec.NotificationCallback);
->>>>>>> parent of 7c513b6b... Added MediaCodec.releaseOutputBuffer() method with render timestamp
     method public final void setParameters(android.os.Bundle);
     method public final void setVideoScalingMode(int);
     method public final void signalEndOfInputStream();
