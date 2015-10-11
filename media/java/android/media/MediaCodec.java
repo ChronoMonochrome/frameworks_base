@@ -1066,7 +1066,7 @@ final public class MediaCodec {
             invalidateByteBuffer(mCachedOutputBuffers, index);
             mDequeuedOutputBuffers.remove(index);
         }
-        releaseOutputBuffer(index, render, false /* updatePTS */, 0 /* dummy */);
+        releaseOutputBuffer(index, render, false);
     }
 
     private native final void releaseOutputBuffer(
