@@ -118,9 +118,6 @@ public class BarTransitions {
     }
 
     private static class BarBackgroundDrawable extends Drawable {
-        private final int mGradientResourceId;
-        private final int mOpaqueColorResourceId;
-        private final int mSemiTransparentColorResourceId;
         private final int mOpaque;
         private final int mSemiTransparent;
         private final Drawable mGradient;
@@ -149,18 +146,6 @@ public class BarTransitions {
             }
             mGradient = res.getDrawable(gradientResourceId);
             mInterpolator = new LinearInterpolator();
-<<<<<<< HEAD
-            mGradientResourceId = gradientResourceId;
-            mOpaqueColorResourceId = opaqueColorResourceId;
-            mSemiTransparentColorResourceId = semiTransparentColorResourceId;
-        }
-
-        public void updateResources(Resources res)  {
-            mOpaque = res.getColor(mOpaqueColorResourceId);
-            mSemiTransparent = res.getColor(mSemiTransparentColorResourceId);
-            mGradient = res.getDrawable(mGradientResourceId);
-=======
->>>>>>> parent of b076c8e... Themes: Allow theming navbar bg color
         }
 
         @Override

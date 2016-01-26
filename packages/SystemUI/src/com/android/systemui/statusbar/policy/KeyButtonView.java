@@ -138,38 +138,6 @@ public class KeyButtonView extends ImageView {
 
         setTag(mActions.singleAction); // should be OK even if it's null
 
-        setImage();
-
-    }
-
-    /* @hide */
-    public void setImage() {
-        setImage(getResources());
-    }
-
-    /* @hide */
-    public void setImage(final Resources res) {
-        // set image
-        if (mActions.iconUri != null && mActions.iconUri.length() > 0) {
-            // custom icon from the URI here
-            File f = new File(Uri.parse(mActions.iconUri).getPath());
-            if (f.exists()) {
-                setImageDrawable(new BitmapDrawable(res, f.getAbsolutePath()));
-            }
-        } else if (mActions.singleAction != null) {
-            setImageDrawable(NavBarHelpers.getIconImage(mContext, mActions.singleAction));
-        } else {
-            setImageResource(R.drawable.ic_sysbar_null);
-        }
-
-        mHasSingleAction = mActions != null && (mActions.singleAction != null);
-        mHasLongAction = mActions != null && mActions.longPressAction != null;
-        mHasDoubleAction = mActions != null && mActions.doubleTapAction != null;
-        mHasBlankSingleAction = mActions != null
-                && mActions.singleAction != null
-                && mActions.singleAction.equals(BLANK_ACTION);
-        setLongClickable(mHasLongAction);
-        Log.e(TAG, "Adding a navbar button in landscape or portrait");
     }
 
     @Override
