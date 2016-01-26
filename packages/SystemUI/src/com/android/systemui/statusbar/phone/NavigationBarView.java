@@ -254,6 +254,7 @@ public class NavigationBarView extends LinearLayout {
         watchForDevicePolicyChanges();
 
         mLockPatternUtils = new LockPatternUtils(context);
+        updateNavbarDisabledForPrefs();
     }
 
     private void watchForDevicePolicyChanges() {
@@ -459,6 +460,18 @@ public class NavigationBarView extends LinearLayout {
         mBarTransitions.applyBackButtonQuiescentAlpha(mBarTransitions.getMode(), true /*animate*/);
     }
 
+    private void updateNavbarDisabledForPrefs() {
+        final ContentResolver r = mContext.getContentResolver();
+        mPrefLockscreen = Settings.System.getInt(r,
+                    Settings.System.LOCKSCREEN_NOTIFICATIONS, 0) == 1
+            && Settings.System.getInt(r,
+                    Settings.System.ACTIVE_NOTIFICATIONS, 0) == 1
+            && Settings.System.getInt(r,
+                    Settings.System.ACTIVE_NOTIFICATIONS_PRIVACY_MODE, 0) == 0;
+        mPrefNavring = Settings.System.getInt(r,
+                    Settings.System.ENABLE_NAVIGATION_RING, 1) == 1;
+    }
+
     private void setVisibleOrInvisible(View view, boolean visible) {
         if (view != null) {
             view.setVisibility(visible ? VISIBLE : INVISIBLE);
@@ -554,19 +567,11 @@ public class NavigationBarView extends LinearLayout {
             r.registerContentObserver(Settings.System.getUriFor(Settings.System.NAVIGATION_BAR_BUTTONS),
                 false, mSettingsObserver);
         }
-
         if (mDisablePrefsObserver == null) {
             mDisablePrefsObserver = new ContentObserver(new Handler()) {
                 @Override
                 public void onChange(boolean selfChange) {
-                    mPrefLockscreen = Settings.System.getInt(r,
-                                    Settings.System.LOCKSCREEN_NOTIFICATIONS, 0) == 1
-                            && Settings.System.getInt(r,
-                                    Settings.System.ACTIVE_NOTIFICATIONS, 0) == 1
-                            && Settings.System.getInt(r,
-                                    Settings.System.ACTIVE_NOTIFICATIONS_PRIVACY_MODE, 0) == 0;
-                    mPrefNavring = Settings.System.getInt(r,
-                            Settings.System.ENABLE_NAVIGATION_RING, 1) == 1;
+                    updateNavbarDisabledForPrefs();
                 }};
 
             r.registerContentObserver(Settings.System.getUriFor(Settings.System.LOCKSCREEN_NOTIFICATIONS),
@@ -577,9 +582,6 @@ public class NavigationBarView extends LinearLayout {
                 false, mDisablePrefsObserver);
             r.registerContentObserver(Settings.System.getUriFor(Settings.System.ACTIVE_NOTIFICATIONS_PRIVACY_MODE),
                 false, mDisablePrefsObserver);
-
-            // pop goes the weasel
-            mDisablePrefsObserver.onChange(true);
         }
     }
 
