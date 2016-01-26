@@ -210,7 +210,7 @@ public class KeyguardViewManager {
             if (mKeyguardHost != null) {
                 mKeyguardHost.cacheUserImage();
             }
-            updateShowWallpaper(mKeyguardHost.shouldShowWallpaper(!isSeeThroughEnabled));
+            //updateShowWallpaper(mKeyguardHost.shouldShowWallpaper(!isSeeThroughEnabled));
         }
     }
 
