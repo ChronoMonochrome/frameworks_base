@@ -140,30 +140,6 @@ public class KeyButtonView extends ImageView {
 
         setImage();
 
-        mHasSingleAction = mActions != null && (mActions.singleAction != null);
-        mHasLongAction = mActions != null && mActions.longPressAction != null;
-        mHasDoubleAction = mActions != null && mActions.doubleTapAction != null;
-        mHasBlankSingleAction = mHasSingleAction && mActions.singleAction.equals(BLANK_ACTION);
-
-        // TO DO: determine type of key prior to getting a keybuttonview instance to allow more specialized
-        // and efficiently coded keybuttonview classes.
-        mIsDPadAction = mHasSingleAction
-                && (mActions.singleAction.equals(ARROW_LEFT)
-                || mActions.singleAction.equals(ARROW_UP)
-                || mActions.singleAction.equals(ARROW_DOWN)
-                || mActions.singleAction.equals(ARROW_RIGHT));
-
-        mIsRecentsSingleAction = (mHasSingleAction && mActions.singleAction.equals(RECENTS_ACTION));
-        mIsRecentsLongAction = (mHasLongAction && mActions.longPressAction.equals(RECENTS_ACTION));
-        mIsRecentsDoubleTapAction = (mHasDoubleAction && mActions.doubleTapAction.equals(RECENTS_ACTION));
-
-        if (mIsRecentsSingleAction || mIsRecentsLongAction || mIsRecentsDoubleTapAction) {
-            mIsRecentsAction = true;
-            getStatusBarInstance();
-        }
-
-        setLongClickable(mHasLongAction);
-        Log.e(TAG, "Adding a navbar button in landscape or portrait");
     }
 
     /* @hide */
@@ -185,6 +161,15 @@ public class KeyButtonView extends ImageView {
         } else {
             setImageResource(R.drawable.ic_sysbar_null);
         }
+
+        mHasSingleAction = mActions != null && (mActions.singleAction != null);
+        mHasLongAction = mActions != null && mActions.longPressAction != null;
+        mHasDoubleAction = mActions != null && mActions.doubleTapAction != null;
+        mHasBlankSingleAction = mActions != null
+                && mActions.singleAction != null
+                && mActions.singleAction.equals(BLANK_ACTION);
+        setLongClickable(mHasLongAction);
+        Log.e(TAG, "Adding a navbar button in landscape or portrait");
     }
 
     @Override
