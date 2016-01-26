@@ -33,7 +33,6 @@ interface IStatusBarService
     void topAppWindowChanged(boolean menuVisible);
     void setImeWindowStatus(in IBinder token, int vis, int backDisposition);
     void expandSettingsPanel();
-    void animateNotificationsOrSettingsPanel();
     void setCurrentUser(int newUserId);
     void setButtonDrawable(int buttonId, int iconId);
 

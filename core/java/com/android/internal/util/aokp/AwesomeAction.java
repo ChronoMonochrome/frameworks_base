@@ -143,11 +143,34 @@ public class AwesomeAction {
                 break;
 
             case ACTION_NOTIFICATIONS:
-                try {
-                    IStatusBarService.Stub.asInterface(
-                        ServiceManager.getService(mContext.STATUS_BAR_SERVICE)).animateNotificationsOrSettingsPanel();
-                } catch (RemoteException e) {
-                    Log.e(TAG, "NOTIFICATION ACTION FAILED");
+                if (wtf) {
+                    if (!ftw) {
+                        try {
+                            IStatusBarService.Stub.asInterface(
+                                ServiceManager.getService(mContext.STATUS_BAR_SERVICE)).expandNotificationsPanel();
+                            ftw = true;
+                        } catch (RemoteException e) {
+                            // A RemoteException is like a cold
+                            // Let's hope we don't catch one!
+                        }
+                    } else {
+                        try {
+                            IStatusBarService.Stub.asInterface(
+                                ServiceManager.getService(mContext.STATUS_BAR_SERVICE)).expandSettingsPanel();
+                            ftw = false;
+                        } catch (RemoteException e) {
+                            // NO!!!
+                        }
+                        wtf = false;
+                        }
+                    } else {
+                    try {
+                        IStatusBarService.Stub.asInterface(
+                            ServiceManager.getService(mContext.STATUS_BAR_SERVICE)).collapsePanels();
+                        wtf = true;
+                    } catch (RemoteException e) {
+                        // EL CHUPACABRA!!
+                    }
                 }
                 break;
 
