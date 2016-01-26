@@ -3324,18 +3324,6 @@ public final class Settings {
         public static final String ENABLE_NAVIGATION_BAR = "enable_navigation_bar";
 
         /**
-         * Allow navigation bar side keys
-         * @hide
-         */
-        public static final String NAVIGATION_BAR_SIDEKEYS = "navigation_bar_sidekeys";
-
-        /**
-         * Allow navigation bar IME arrow keys
-         * @hide
-         */
-        public static final String NAVIGATION_BAR_ARROWS = "navigation_bar_arrows";
-
-        /**
          * Whether or not to enable the navring
          * @hide
          */
