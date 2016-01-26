@@ -74,9 +74,6 @@
     <string name="action_arrow_down">Cursor down</string>
     <string name="gesture_actions">Gesture panel</string>
 
-    <string name="def_ime_layout">**back**,,,|**ime**,,,|**arrow_left**,,,|**arrow_up**,,,|**arrow_down**,,,|**arrow_right**,,,</string>
-    <string name="def_navbar_layout">**back**,,,|**home**,,,|**recents**,,,</string>
-
     <!-- Title of an application permission that lets an application view/edit revoked permissions. -->
     <string name="permlab_revokePermissions">Allows view and edit of revoked permissions. Not for use by normal applications.</string>
     <!-- Description of an application permission that lets lets an application view/edit revoked permissions. -->

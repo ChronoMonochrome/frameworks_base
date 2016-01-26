@@ -192,8 +192,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
     private boolean clearable;
     private boolean mAllowCarrierLabelUpdates = true;
 
-    private boolean showingIME;
-
     PhoneStatusBarPolicy mIconPolicy;
 
     // These are no longer handled by the policy, because we need custom strategies for them
@@ -1263,13 +1261,12 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
     }
 
     private void prepareNavigationBarView() {
-        mNavigationBarView.setIMEState(showingIME);
         mNavigationBarView.reorient();
 
         if (mNavigationBarView.getRecentsButton() != null) {
             mNavigationBarView.getRecentsButton().setOnClickListener(mRecentsClickListener);
             mNavigationBarView.getRecentsButton().setOnTouchListener(mRecentsPreloadOnTouchListener);
-            if (mCustomRecent == 0) mNavigationBarView.getRecentsButton().setOnTouchListener(mRecentsPreloadOnTouchListener);
+            if(mCustomRecent == 0) mNavigationBarView.getRecentsButton().setOnTouchListener(mRecentsPreloadOnTouchListener);
         }
         if (mNavigationBarView.getHomeButton() != null) {
             mNavigationBarView.getHomeButton().setOnTouchListener(mHomeSearchActionListener);
@@ -2625,12 +2622,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         mNavigationIconHints = hints;
 
         if (mNavigationBarView != null) {
-            boolean nav = true;
-            try {
-                nav = mWindowManagerService.needsNavigationBar();
-            } catch(RemoteException re) {
-            }
-            mNavigationBarView.setNavigationIconHints(hints, !nav);
+            mNavigationBarView.setNavigationIconHints(hints);
         }
         checkBarModes();
     }
@@ -2869,12 +2861,12 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
 
     @Override
     public void setImeWindowStatus(IBinder token, int vis, int backDisposition) {
-        showingIME = (backDisposition == InputMethodService.BACK_DISPOSITION_WILL_DISMISS)
+        boolean altBack = (backDisposition == InputMethodService.BACK_DISPOSITION_WILL_DISMISS)
             || ((vis & InputMethodService.IME_VISIBLE) != 0);
 
-        setNavigationIconHints(showingIME ? (mNavigationIconHints | NAVIGATION_HINT_BACK_ALT)
+        setNavigationIconHints(
+                altBack ? (mNavigationIconHints | NAVIGATION_HINT_BACK_ALT)
                         : (mNavigationIconHints & ~NAVIGATION_HINT_BACK_ALT));
-
         if (mQS != null) mQS.setImeWindowStatus(vis > 0);
         if (vis > 0) {
             mHandler.sendEmptyMessage(MSG_HIDE_HEADS_UP);
