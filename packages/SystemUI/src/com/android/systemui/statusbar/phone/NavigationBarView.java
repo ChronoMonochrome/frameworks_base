@@ -892,8 +892,7 @@ public class NavigationBarView extends LinearLayout {
         // force the low profile & disabled states into compliance
         try {
             mBarTransitions.init(mVertical);
-        } catch (NullPointerException WTF) {
-            Log.d(TAG, "mBarTransitions.init(mVertical) ... " + WTF);
+        } finally {
         }
 
         setMenuVisibility(mShowMenu, true /* force */);
