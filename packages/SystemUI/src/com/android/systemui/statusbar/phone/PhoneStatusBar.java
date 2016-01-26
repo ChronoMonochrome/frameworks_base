@@ -1264,13 +1264,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
     }
 
     private void prepareNavigationBarView() {
-
-        try {
-            if (!mWindowManagerService.needsNavigationBar())
-                mNavigationBarView.setNavigationIconHints(mNavigationIconHints);
-        } catch(RemoteException re) {
-        }
-
+        mNavigationBarView.setIMEState(showingIME);
         mNavigationBarView.reorient();
 
         if (mNavigationBarView.getRecentsButton() != null) {
