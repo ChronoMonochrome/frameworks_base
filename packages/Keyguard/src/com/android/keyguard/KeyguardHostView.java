@@ -558,7 +558,8 @@ public class KeyguardHostView extends KeyguardViewBase {
     private boolean applicationWidgetDisabledByDpm() {
         boolean disabledByDpm =
                 (mDisabledFeatures & DevicePolicyManager.KEYGUARD_DISABLE_APPLICATION_WIDGET) != 0;
-        return disabledByDpm;
+        boolean disabledByUser = !mLockPatternUtils.getApplicationWidgetEnabled();
+        return disabledByDpm || disabledByUser;
     }
 
     private void updateSecurityViews() {
