@@ -65,9 +65,6 @@
     <!-- Amount to offset bottom of notification peek window from top of status bar. -->
     <dimen name="peek_window_y_offset">-12dp</dimen>
 
-    <!-- thickness (height) of the navigation bar on phones that require it -->
-    <dimen name="navigation_bar_size">1dp</dimen>
-
     <!-- Height of notification icons in the status bar -->
     <dimen name="status_bar_icon_size">@*android:dimen/status_bar_icon_size</dimen>
 

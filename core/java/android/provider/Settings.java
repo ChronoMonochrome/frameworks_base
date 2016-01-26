@@ -3318,18 +3318,6 @@ public final class Settings {
         public static final String NAV_BUTTONS = "nav_buttons";
 
         /**
-         * Whether to enable the navbar for hw key devices
-         * @hide
-         */
-        public static final String ENABLE_NAVIGATION_BAR = "enable_navigation_bar";
-
-        /**
-         * Whether or not to enable the navring
-         * @hide
-         */
-        public static final String ENABLE_NAVIGATION_RING = "enable_navigation_ring";
-
-        /**
         * Notification Power Widget - Custom Brightness Mode
         * @hide
         */
@@ -4566,26 +4554,6 @@ public final class Settings {
          * @hide
          */
         public static final String CLEAR_RECENTS_BUTTON_LOCATION = "clear_recents_button_location";
-
-        /**
-         *
-         * @hide
-         */
-        public static final String NAVIGATION_BAR_BUTTONS = "navigation_bar_buttons";
-
-        /**
-         * @hide
-         */
-        public static final String NAVIGATION_BAR_HEIGHT_LANDSCAPE = "navigation_bar_height_landscape";
-        /**
-         * @hide
-         */
-        public static final String NAVIGATION_BAR_HEIGHT = "navigation_bar_height";
-
-        /**
-         * @hide
-         */
-        public static final String NAVIGATION_BAR_WIDTH = "navigation_bar_width";
 
         /**
          * Whether to enable voice wakeup.  The value is boolean (1 or 0).

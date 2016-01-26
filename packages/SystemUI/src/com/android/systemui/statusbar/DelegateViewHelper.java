@@ -50,7 +50,7 @@ public class DelegateViewHelper {
     }
 
     public boolean onInterceptTouchEvent(MotionEvent event) {
-        if (mSourceView == null || mDelegateView == null || mBar.shouldDisableNavbarGestures()) {
+        if (mSourceView == null || mDelegateView == null) {
             return false;
         }
 
@@ -79,7 +79,6 @@ public class DelegateViewHelper {
                 float y = k < historySize ? event.getHistoricalY(k) : event.getY();
                 final float distance = mSwapXY ? (mDownPoint[0] - x) : (mDownPoint[1] - y);
                 if (distance > mTriggerThreshhold) {
-                    mBar.showSearchPanel();
                     mPanelShowing = true;
                     break;
                 }
@@ -106,10 +105,6 @@ public class DelegateViewHelper {
 
     public void setSourceView(View view) {
         mSourceView = view;
-        if (mSourceView != null) {
-            mTriggerThreshhold = mSourceView.getContext().getResources()
-                    .getDimension(R.dimen.navbar_search_up_threshhold);
-        }
     }
 
     /**

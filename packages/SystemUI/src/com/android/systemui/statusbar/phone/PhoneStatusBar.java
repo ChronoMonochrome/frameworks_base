@@ -111,7 +111,6 @@ import com.android.systemui.DockBatteryMeterView;
 import com.android.systemui.EventLogTags;
 import com.android.systemui.R;
 import com.android.systemui.BatteryMeterView;
-import com.android.systemui.aokp.SearchPanelSwipeView;
 import com.android.systemui.statusbar.BaseStatusBar;
 import com.android.systemui.statusbar.CommandQueue;
 import com.android.systemui.statusbar.GestureRecorder;
@@ -258,7 +257,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
     int mSettingsPanelGravity;
     private TilesChangedObserver mTilesChangedObserver;
     private SettingsObserver mSettingsObserver;
-    boolean mSearchPanelAllowed = true;
     boolean mDoubleTapToSleep = false;
 
     // Ribbon settings
@@ -500,10 +498,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
     private int mInteractingWindows;
     private boolean mAutohideSuspended;
     private int mStatusBarMode;
-    private int mNavigationBarMode;
     private Boolean mScreenOn;
-
-    private SearchPanelSwipeView mSearchPanelSwipeView;
 
     private final Runnable mAutohide = new Runnable() {
         @Override
@@ -1013,59 +1008,8 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
     }
 
     @Override
-    protected void onShowSearchPanel() {
-    }
-
-    @Override
-    protected void onHideSearchPanel() {
-    }
-
-    @Override
     protected View getStatusBarView() {
         return mStatusBarView;
-    }
-
-    @Override
-    protected WindowManager.LayoutParams getSearchLayoutParams(LayoutParams layoutParams) {
-        boolean opaque = false;
-        WindowManager.LayoutParams lp = new WindowManager.LayoutParams(
-                LayoutParams.MATCH_PARENT,
-                LayoutParams.MATCH_PARENT,
-                WindowManager.LayoutParams.TYPE_NAVIGATION_BAR_PANEL,
-                WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN
-                | WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM
-                | WindowManager.LayoutParams.FLAG_SPLIT_TOUCH,
-                (opaque ? PixelFormat.OPAQUE : PixelFormat.TRANSLUCENT));
-        if (ActivityManager.isHighEndGfx()) {
-            lp.flags |= WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED;
-        }
-        lp.gravity = Gravity.BOTTOM | Gravity.START;
-        lp.setTitle("SearchPanel");
-        // TODO: Define custom animation for Search panel
-        lp.windowAnimations = com.android.internal.R.style.Animation_RecentApplications;
-        lp.softInputMode = WindowManager.LayoutParams.SOFT_INPUT_STATE_UNCHANGED
-        | WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING;
-        return lp;
-    }
-
-    @Override
-    protected void updateSearchPanel() {
-        super.updateSearchPanel();
-    }
-
-    @Override
-    public void showSearchPanel() {
-        super.showSearchPanel();
-        mHandler.removeCallbacks(mShowSearchPanel);
-
-        // we want to freeze the sysui state wherever it is
-        mSearchPanelView.setSystemUiVisibility(mSystemUiVisibility);
-
-    }
-
-    @Override
-    public void hideSearchPanel() {
-        super.hideSearchPanel();
     }
 
     protected int getStatusBarGravity() {
@@ -1090,26 +1034,14 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
     };
 
     private int mShowSearchHoldoff = 0;
-    private Runnable mShowSearchPanel = new Runnable() {
-        public void run() {
-            showSearchPanel();
-            awakenDreams();
-        }
-    };
 
     View.OnTouchListener mHomeSearchActionListener = new View.OnTouchListener() {
         public boolean onTouch(View v, MotionEvent event) {
             switch(event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                if (!shouldDisableNavbarGestures()) {
-                    mHandler.removeCallbacks(mShowSearchPanel);
-                    mHandler.postDelayed(mShowSearchPanel, mShowSearchHoldoff);
-                }
             break;
             case MotionEvent.ACTION_UP:
             case MotionEvent.ACTION_CANCEL:
-                mHandler.removeCallbacks(mShowSearchPanel);
-                awakenDreams();
             break;
         }
         return false;
@@ -1124,13 +1056,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                 // fine, stay asleep then
             }
         }
-    }
-
-    private void repositionSearchPanelSwipeView() {
-        if (mSearchPanelSwipeView == null || !mSearchPanelSwipeView.isAttachedToWindow()) return;
-        mSearchPanelSwipeView.updateLayout();
-        mWindowManager.updateViewLayout(mSearchPanelSwipeView, mSearchPanelSwipeView.getGesturePanelLayoutParams());
-        updateSearchPanel();
     }
 
     private void addHeadsUpView() {
@@ -3148,7 +3073,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         updateDisplaySize(); // populates mDisplayMetrics
 
         updateResources();
-        repositionSearchPanelSwipeView();
         updateExpandedViewPos(EXPANDED_LEAVE_ALONE);
         updateShowSearchHoldoff();
     }
@@ -3223,13 +3147,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
             if (mSignalTextView != null) {
                 mSignalTextView.setStyle(signalStyle);
             }
-        }
-
-        final boolean nextSearchEnabledState = Settings.System.getIntForUser(resolver,
-                Settings.System.ENABLE_NAVIGATION_RING, 1,
-                UserHandle.USER_CURRENT) == 1;
-        if (nextSearchEnabledState != mSearchPanelAllowed) {
-            mSearchPanelAllowed = nextSearchEnabledState;
         }
 
         mHoverExcludeForeground = Settings.System.getInt(resolver,
@@ -3525,13 +3442,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         mTicker.halt();
     }
 
-    @Override
-    protected boolean shouldDisableNavbarGestures() {
-        if (!mSearchPanelAllowed) return true;
-        return !isDeviceProvisioned()
-                || mExpandedVisible
-                || (mDisabled & StatusBarManager.DISABLE_SEARCH) != 0;
-    }
 
     private static class FastColorDrawable extends Drawable {
         private final int mColor;

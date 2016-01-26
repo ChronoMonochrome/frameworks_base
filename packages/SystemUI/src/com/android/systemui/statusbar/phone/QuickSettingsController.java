@@ -259,8 +259,6 @@ public class QuickSettingsController {
                 qs = new OnTheGoTile(mContext, this);
             } else if (tile.equals(TILE_HEADS_UP)) {
                 qs = new HeadsUpTile(mContext, this);
-            } else if (tile.equals(TILE_NAVBAR)) {
-                qs = new NavbarTile(mContext, this);
             } else if (tile.equals(TILE_GESTUREPANEL)) {
                 qs = new GesturePanelTile(mContext, this);
             } else if (tile.equals(TILE_THEMES)) {

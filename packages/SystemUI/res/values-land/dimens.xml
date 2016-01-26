@@ -16,9 +16,6 @@
 */
 -->
 <resources>
-    <!-- thickness (width) of the navigation bar on phones that require it -->
-    <dimen name="navigation_bar_size">@*android:dimen/navigation_bar_width</dimen>
-
     <!-- Recent Applications parameters -->
     <!-- How far the thumbnail for a recent app appears from left edge -->
     <dimen name="status_bar_recents_thumbnail_left_margin">0dp</dimen>

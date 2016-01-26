@@ -93,7 +93,6 @@ import com.android.internal.widget.SizeAdaptiveLayout;
 import com.android.internal.util.omni.OmniSwitchConstants;
 import com.android.systemui.R;
 import com.android.systemui.RecentsComponent;
-import com.android.systemui.AOKPSearchPanelView;
 import com.android.systemui.SystemUI;
 import com.android.systemui.slimrecent.RecentController;
 import com.android.systemui.statusbar.halo.Halo;
@@ -168,9 +167,6 @@ public abstract class BaseStatusBar extends SystemUI implements
 
     // used to notify status bar for suppressing notification LED
     protected boolean mPanelSlightlyVisible;
-
-    // Search panel
-    protected AOKPSearchPanelView mSearchPanelView;
 
     // Gesture panel
     protected GesturePanelView mGesturePanelView = null;
@@ -963,49 +959,7 @@ public abstract class BaseStatusBar extends SystemUI implements
     }
 
     @Override
-    public void showSearchPanel() {
-        int msg = MSG_OPEN_SEARCH_PANEL;
-        mHandler.removeMessages(msg);
-        mHandler.sendEmptyMessage(msg);
-    }
-
-    @Override
-    public void hideSearchPanel() {
-        int msg = MSG_CLOSE_SEARCH_PANEL;
-        mHandler.removeMessages(msg);
-        mHandler.sendEmptyMessage(msg);
-    }
-
-    @Override
     public void setButtonDrawable(int buttonId, int iconId) {}
-
-    protected abstract WindowManager.LayoutParams getSearchLayoutParams(
-            LayoutParams layoutParams);
-
-    protected void updateSearchPanel() {
-        // Search Panel
-        boolean visible = false;
-        if (mSearchPanelView != null) {
-            visible = mSearchPanelView.isShowing();
-            mWindowManager.removeView(mSearchPanelView);
-        }
-
-        // Provide SearchPanel with a temporary parent to allow layout params to work.
-        LinearLayout tmpRoot = new LinearLayout(mContext);
-        mSearchPanelView = (AOKPSearchPanelView) LayoutInflater.from(mContext).inflate(
-                 R.layout.status_bar_search_panel, tmpRoot, false);
-        mSearchPanelView.setOnTouchListener(
-                 new TouchOutsideListener(MSG_CLOSE_SEARCH_PANEL, mSearchPanelView));
-        mSearchPanelView.setVisibility(View.GONE);
-
-        WindowManager.LayoutParams lp = getSearchLayoutParams(mSearchPanelView.getLayoutParams());
-
-        mWindowManager.addView(mSearchPanelView, lp);
-        mSearchPanelView.setBar(this);
-        if (visible) {
-            mSearchPanelView.show(true, false);
-        }
-    }
 
     protected H createHandler() {
          return new H();
@@ -1139,21 +1093,7 @@ public abstract class BaseStatusBar extends SystemUI implements
              case MSG_CANCEL_PRELOAD_RECENT_APPS:
                   cancelPreloadingRecentTasksList();
                   break;
-             case MSG_OPEN_SEARCH_PANEL:
-                 if (DEBUG) Log.d(TAG, "opening search panel");
-                 if (mSearchPanelView != null && mSearchPanelView.isAssistantAvailable()) {
-                     mSearchPanelView.show(true, true);
-                     onShowSearchPanel();
-                 }
-                 break;
-             case MSG_CLOSE_SEARCH_PANEL:
-                 if (DEBUG) Log.d(TAG, "closing search panel");
-                 if (mSearchPanelView != null && mSearchPanelView.isShowing()) {
-                     mSearchPanelView.show(false, true);
-                     onHideSearchPanel();
-                 }
-                 break;
-            }
+	    }
         }
     }
 
@@ -1180,12 +1120,6 @@ public abstract class BaseStatusBar extends SystemUI implements
     }
 
     protected void workAroundBadLayerDrawableOpacity(View v) {
-    }
-
-    protected void onHideSearchPanel() {
-    }
-
-    protected void onShowSearchPanel() {
     }
 
     public boolean inflateViews(NotificationData.Entry entry, ViewGroup parent) {
@@ -1702,7 +1636,6 @@ public abstract class BaseStatusBar extends SystemUI implements
     protected abstract int getExpandedViewMaxHeight();
     protected abstract boolean isNotificationPanelFullyVisible();
     protected abstract boolean isTrackingNotificationPanel();
-    protected abstract boolean shouldDisableNavbarGestures();
     public abstract boolean isExpandedVisible();
 
     protected boolean isTopNotification(ViewGroup parent, NotificationData.Entry entry) {
@@ -1988,9 +1921,6 @@ public abstract class BaseStatusBar extends SystemUI implements
     }
 
     public void destroy() {
-        if (mSearchPanelView != null) {
-            mWindowManager.removeViewImmediate(mSearchPanelView);
-        }
         mContext.unregisterReceiver(mBroadcastReceiver);
     }
 

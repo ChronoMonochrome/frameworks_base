@@ -231,11 +231,6 @@ interface IWindowManager
     boolean waitForWindowDrawn(IBinder token, in IRemoteCallback callback);
 
     /**
-     * Device has a software navigation bar (separate from the status bar).
-     */
-    boolean hasNavigationBar();
-
-    /**
      * Updates the rotation state if Immersive is set to be orientation dependent.
      * @hide
      */
@@ -246,16 +241,6 @@ interface IWindowManager
      * @hide
      */
     void sendHomeAction();
-
-    /**
-     * Device needs a software navigation bar (because it has no hardware keys).
-     */
-    boolean needsNavigationBar();
-
-    /**
-     * Device wants a navigation bar (becuase it has hardware keys)
-     */
-    boolean wantsNavigationBar();
 
     /**
      * Device can generate KEY_ACTION_MENU keypress

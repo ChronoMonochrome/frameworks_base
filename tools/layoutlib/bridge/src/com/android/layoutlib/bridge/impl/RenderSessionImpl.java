@@ -44,7 +44,6 @@ import com.android.layoutlib.bridge.android.BridgeContext;
 import com.android.layoutlib.bridge.android.BridgeLayoutParamsMapAttributes;
 import com.android.layoutlib.bridge.android.BridgeXmlBlockParser;
 import com.android.layoutlib.bridge.bars.FakeActionBar;
-import com.android.layoutlib.bridge.bars.NavigationBar;
 import com.android.layoutlib.bridge.bars.StatusBar;
 import com.android.layoutlib.bridge.bars.TitleBar;
 import com.android.layoutlib.bridge.impl.binding.FakeAdapter;
@@ -125,8 +124,6 @@ public class RenderSessionImpl extends RenderAction<SessionParams> {
     private boolean mWindowIsFloating;
 
     private int mStatusBarSize;
-    private int mNavigationBarSize;
-    private int mNavigationBarOrientation = LinearLayout.HORIZONTAL;
     private int mTitleBarSize;
     private int mActionBarSize;
 
@@ -189,13 +186,11 @@ public class RenderSessionImpl extends RenderAction<SessionParams> {
         findBackground(resources);
         findStatusBar(resources, metrics);
         findActionBar(resources, metrics);
-        findNavigationBar(resources, metrics);
 
         // FIXME: find those out, and possibly add them to the render params
-        boolean hasNavigationBar = true;
         IWindowManager iwm = new IWindowManagerImpl(getContext().getConfiguration(),
                 metrics, Surface.ROTATION_0,
-                hasNavigationBar);
+                false);
         WindowManagerGlobal_Delegate.setWindowManagerService(iwm);
 
         // build the inflater and parser.
@@ -234,87 +229,6 @@ public class RenderSessionImpl extends RenderAction<SessionParams> {
                 backgroundView = mViewRoot = mContentRoot = new FrameLayout(context);
                 mViewRoot.setLayoutDirection(direction);
             } else {
-                if (hasSoftwareButtons() && mNavigationBarOrientation == LinearLayout.VERTICAL) {
-                    /*
-                     * This is a special case where the navigation bar is on the right.
-                       +-------------------------------------------------+---+
-                       | Status bar (always)                             |   |
-                       +-------------------------------------------------+   |
-                       | (Layout with background drawable)               |   |
-                       | +---------------------------------------------+ |   |
-                       | | Title/Action bar (optional)                 | |   |
-                       | +---------------------------------------------+ |   |
-                       | | Content, vertical extending                 | |   |
-                       | |                                             | |   |
-                       | +---------------------------------------------+ |   |
-                       +-------------------------------------------------+---+
-
-                       So we create a horizontal layout, with the nav bar on the right,
-                       and the left part is the normal layout below without the nav bar at
-                       the bottom
-                     */
-                    LinearLayout topLayout = new LinearLayout(context);
-                    topLayout.setLayoutDirection(direction);
-                    mViewRoot = topLayout;
-                    topLayout.setOrientation(LinearLayout.HORIZONTAL);
-
-                    try {
-                        NavigationBar navigationBar = new NavigationBar(context,
-                                hardwareConfig.getDensity(), LinearLayout.VERTICAL, isRtl,
-                                params.isRtlSupported());
-                        navigationBar.setLayoutParams(
-                                new LinearLayout.LayoutParams(
-                                        mNavigationBarSize,
-                                        LayoutParams.MATCH_PARENT));
-                        topLayout.addView(navigationBar);
-                    } catch (XmlPullParserException e) {
-
-                    }
-                }
-
-                /*
-                 * we're creating the following layout
-                 *
-                   +-------------------------------------------------+
-                   | Status bar (always)                             |
-                   +-------------------------------------------------+
-                   | (Layout with background drawable)               |
-                   | +---------------------------------------------+ |
-                   | | Title/Action bar (optional)                 | |
-                   | +---------------------------------------------+ |
-                   | | Content, vertical extending                 | |
-                   | |                                             | |
-                   | +---------------------------------------------+ |
-                   +-------------------------------------------------+
-                   | Navigation bar for soft buttons, maybe see above|
-                   +-------------------------------------------------+
-
-                 */
-
-                LinearLayout topLayout = new LinearLayout(context);
-                topLayout.setOrientation(LinearLayout.VERTICAL);
-                topLayout.setLayoutDirection(direction);
-                // if we don't already have a view root this is it
-                if (mViewRoot == null) {
-                    mViewRoot = topLayout;
-                } else {
-                    LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
-                            LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT);
-                    layoutParams.weight = 1;
-                    topLayout.setLayoutParams(layoutParams);
-
-                    // this is the case of soft buttons + vertical bar.
-                    // this top layout is the first layout in the horizontal layout. see above)
-                    if (isRtl && params.isRtlSupported()) {
-                        // If RTL is enabled, layoutlib will mirror the layouts. So, add the
-                        // topLayout to the right of Navigation Bar and layoutlib will draw it
-                        // to the left.
-                        mViewRoot.addView(topLayout);
-                    } else {
-                        // Add the top layout to the left of the Navigation Bar.
-                        mViewRoot.addView(topLayout, 0);
-                    }
-                }
 
                 if (mStatusBarSize > 0) {
                     // system bar
@@ -374,23 +288,7 @@ public class RenderSessionImpl extends RenderAction<SessionParams> {
                 mContentRoot.setLayoutParams(layoutParams);
                 backgroundLayout.addView(mContentRoot);
 
-                if (mNavigationBarOrientation == LinearLayout.HORIZONTAL &&
-                        mNavigationBarSize > 0) {
-                    // system bar
-                    try {
-                        NavigationBar navigationBar = new NavigationBar(context,
-                                hardwareConfig.getDensity(), LinearLayout.HORIZONTAL, isRtl,
-                                params.isRtlSupported());
-                        navigationBar.setLayoutParams(
-                                new LinearLayout.LayoutParams(
-                                        LayoutParams.MATCH_PARENT, mNavigationBarSize));
-                        topLayout.addView(navigationBar);
-                    } catch (XmlPullParserException e) {
-
-                    }
-                }
-            }
-
+	    }
 
             // Sets the project callback (custom view loader) to the fragment delegate so that
             // it can instantiate the custom Fragment.
@@ -1124,53 +1022,6 @@ public class RenderSessionImpl extends RenderAction<SessionParams> {
                 }
             }
 
-        }
-    }
-
-    private void findNavigationBar(RenderResources resources, DisplayMetrics metrics) {
-        if (hasSoftwareButtons() && mWindowIsFloating == false) {
-
-            // default value
-            mNavigationBarSize = 48; // ??
-
-            HardwareConfig hardwareConfig = getParams().getHardwareConfig();
-
-            boolean barOnBottom = true;
-
-            if (hardwareConfig.getOrientation() == ScreenOrientation.LANDSCAPE) {
-                // compute the dp of the screen.
-                int shortSize = hardwareConfig.getScreenHeight();
-
-                // compute in dp
-                int shortSizeDp = shortSize * DisplayMetrics.DENSITY_DEFAULT / hardwareConfig.getDensity().getDpiValue();
-
-                if (shortSizeDp < 600) {
-                    // 0-599dp: "phone" UI with bar on the side
-                    barOnBottom = false;
-                } else {
-                    // 600+dp: "tablet" UI with bar on the bottom
-                    barOnBottom = true;
-                }
-            }
-
-            if (barOnBottom) {
-                mNavigationBarOrientation = LinearLayout.HORIZONTAL;
-            } else {
-                mNavigationBarOrientation = LinearLayout.VERTICAL;
-            }
-
-            // get the real value
-            ResourceValue value = resources.getFrameworkResource(ResourceType.DIMEN,
-                    barOnBottom ? "navigation_bar_height" : "navigation_bar_width");
-
-            if (value != null) {
-                TypedValue typedValue = ResourceHelper.getValue("navigation_bar_height",
-                        value.getValue(), true /*requireUnit*/);
-                if (typedValue != null) {
-                    // compute the pixel value based on the display metrics
-                    mNavigationBarSize = (int)typedValue.getDimension(metrics);
-                }
-            }
         }
     }
 

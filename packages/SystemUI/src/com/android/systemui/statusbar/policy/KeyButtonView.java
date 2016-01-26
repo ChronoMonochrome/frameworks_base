@@ -42,7 +42,6 @@ import android.widget.ImageView;
 import com.android.internal.statusbar.IStatusBarService;
 import com.android.internal.util.aokp.AwesomeAction;
 import com.android.internal.util.aokp.AwesomeConstants.AwesomeConstant;
-import com.android.internal.util.aokp.NavBarHelpers;
 import com.android.systemui.R;
 
 import java.io.File;

@@ -95,8 +95,6 @@ public class CommandQueue extends IStatusBar.Stub {
         public void setHardKeyboardStatus(boolean available, boolean enabled);
         public void toggleRecentApps();
         public void preloadRecentApps();
-        public void showSearchPanel();
-        public void hideSearchPanel();
         public void cancelPreloadRecentApps();
         public void setWindowState(int window, int state);
         public void setButtonDrawable(int buttonId, int iconId);
