@@ -64,8 +64,9 @@ import com.android.systemui.statusbar.BaseStatusBar;
 import com.android.systemui.statusbar.DelegateViewHelper;
 import com.android.systemui.statusbar.policy.DeadZone;
 import com.android.systemui.statusbar.policy.LayoutChangerButtonView;
+import com.android.systemui.statusbar.policy.LayoutChangerButtonView.LayoutButtonInfo;
 import com.android.systemui.statusbar.policy.KeyButtonView;
-import com.android.systemui.statusbar.policy.KeyButtonView.KeyButtonInfo;
+import com.android.systemui.statusbar.policy.KeyButtonView.AwesomeButtonInfo;
 
 import java.io.FileDescriptor;
 import java.io.PrintWriter;
@@ -97,8 +98,8 @@ public class NavigationBarView extends LinearLayout {
 
     final boolean mTablet = isTablet(mContext);
 
-    ArrayList<ArrayList<KeyButtonInfo>> mAllButtonContainers = new ArrayList<ArrayList<KeyButtonInfo>>();
-    ArrayList<KeyButtonInfo> mIMEKeyArray = new ArrayList<KeyButtonInfo>();
+    ArrayList<ArrayList<AwesomeButtonInfo>> mAllButtonContainers = new ArrayList<ArrayList<AwesomeButtonInfo>>();
+    ArrayList<AwesomeButtonInfo> mIMEKeyArray = new ArrayList<AwesomeButtonInfo>();
 
     public static int mRightStopKey = 6;
 
@@ -806,22 +807,22 @@ public class NavigationBarView extends LinearLayout {
             userButtons = mIMEKeyLayout.split("\\|");
             for (String button : userButtons) {
                 String[] actions = button.split(",", 4);
-                mIMEKeyArray.add(new KeyButtonInfo(actions[0], actions[1], actions[2], actions[3]));
+                mIMEKeyArray.add(new AwesomeButtonInfo(actions[0], actions[1], actions[2], actions[3]));
             }
         }
         setupNavigationButtons();
     }
 
-    private ArrayList<KeyButtonInfo> getButtonsArray(String[] userButtons) {
-        ArrayList<KeyButtonInfo> mButtonsContainer = new ArrayList<KeyButtonInfo>();
+    private ArrayList<AwesomeButtonInfo> getButtonsArray(String[] userButtons) {
+        ArrayList<AwesomeButtonInfo> mButtonsContainer = new ArrayList<AwesomeButtonInfo>();
         for (String button : userButtons) {
             String[] actions = button.split(",", 4);
-            mButtonsContainer.add(new KeyButtonInfo(actions[0], actions[1], actions[2], actions[3]));
+            mButtonsContainer.add(new AwesomeButtonInfo(actions[0], actions[1], actions[2], actions[3]));
         }
         return mButtonsContainer;
     }
 
-    private ArrayList<KeyButtonInfo> getCurrentButtonArray() {
+    private ArrayList<AwesomeButtonInfo> getCurrentButtonArray() {
         if (mArrows && showingIME) return mIMEKeyArray;
         return mAllButtonContainers.get(mCurrentLayout - 1);
     }
@@ -830,7 +831,7 @@ public class NavigationBarView extends LinearLayout {
         setupNavigationButtons(getCurrentButtonArray());
     }
 
-    private void setupNavigationButtons(ArrayList<KeyButtonInfo> buttonsArray) {
+    private void setupNavigationButtons(ArrayList<AwesomeButtonInfo> buttonsArray) {
         final boolean stockThreeButtonLayout = buttonsArray.size() == 3;
         final int separatorSize = (int) mMenuButtonWidth;
         final int length = buttonsArray.size();
@@ -847,13 +848,14 @@ public class NavigationBarView extends LinearLayout {
             lightsOut = (LinearLayout) (landscape ? mRotatedViews[Surface.ROTATION_90]
                     .findViewById(R.id.lights_out) : mRotatedViews[Surface.ROTATION_0]
                     .findViewById(R.id.lights_out));
+
             navButtons.removeAllViews();
             lightsOut.removeAllViews();
 
             if (mButtonLayouts > 1) {
                 if (!mArrows || !showingIME) {
                     // left-side layout changer
-                    KeyButtonInfo leftButtonInfo = new KeyButtonInfo(AwesomeConstant.ACTION_LAYOUT_LEFT.value());
+                    LayoutButtonInfo leftButtonInfo = new LayoutButtonInfo(AwesomeConstant.ACTION_LAYOUT_LEFT.value());
                     LayoutChangerButtonView leftButton = new LayoutChangerButtonView(mContext, null);
                     leftButton.setButtonActions(leftButtonInfo);
                     leftButton.setImageResource(R.drawable.ic_sysbar_layout_left);
@@ -883,7 +885,7 @@ public class NavigationBarView extends LinearLayout {
 
             for (int j = 0; j < length; j++) {
                 // create the button
-                KeyButtonInfo info = buttonsArray.get(j);
+                AwesomeButtonInfo info = buttonsArray.get(j);
                 KeyButtonView button = new KeyButtonView(mContext, null);
                 button.setButtonActions(info);
                 if (mTablet) {
@@ -907,7 +909,7 @@ public class NavigationBarView extends LinearLayout {
 
             if (mLegacyMenu && mButtonLayouts == 1) {
                 // legacy menu button
-                KeyButtonInfo menuButtonInfo = new KeyButtonInfo(AwesomeConstant.ACTION_MENU.value(),
+                AwesomeButtonInfo menuButtonInfo = new AwesomeButtonInfo(AwesomeConstant.ACTION_MENU.value(),
                         null, null, null);
                 KeyButtonView menuButton = new KeyButtonView(mContext, null);
                 menuButton.setButtonActions(menuButtonInfo);
@@ -939,7 +941,7 @@ public class NavigationBarView extends LinearLayout {
             if (mButtonLayouts > 1) {
                 if (!mArrows || !showingIME) {
                     // right-side layout changer button
-                    KeyButtonInfo rightButtonInfo = new KeyButtonInfo(mShowMenu
+                    LayoutButtonInfo rightButtonInfo = new LayoutButtonInfo(mShowMenu
                             ? AwesomeConstant.ACTION_MENU.value()
                             : AwesomeConstant.ACTION_LAYOUT_RIGHT.value());
                     LayoutChangerButtonView rightButton = new LayoutChangerButtonView(mContext, null);
