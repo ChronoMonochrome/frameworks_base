@@ -97,14 +97,16 @@ public class NavigationBarView extends LinearLayout {
 
     final boolean mTablet = isTablet(mContext);
 
-    private String[] mButtonContainerStrings = new String[5];
     ArrayList<ArrayList<KeyButtonInfo>> mAllButtonContainers = new ArrayList<ArrayList<KeyButtonInfo>>();
-    private static final String[] buttonSettings = new String[] { Settings.System.NAVIGATION_BAR_BUTTONS,
-                                                                  Settings.System.NAVIGATION_BAR_BUTTONS_TWO,
-                                                                  Settings.System.NAVIGATION_BAR_BUTTONS_THREE,
-                                                                  Settings.System.NAVIGATION_BAR_BUTTONS_FOUR,
-                                                                  Settings.System.NAVIGATION_BAR_BUTTONS_FIVE };
     ArrayList<KeyButtonInfo> mIMEKeyArray = new ArrayList<KeyButtonInfo>();
+
+    public static int mRightStopKey = 6;
+
+    String mButtonContainerString_1;
+    String mButtonContainerString_2;
+    String mButtonContainerString_3;
+    String mButtonContainerString_4;
+    String mButtonContainerString_5;
 
     private ContentObserver mSettingsObserver;
     private ContentObserver mDisablePrefsObserver;
@@ -124,7 +126,7 @@ public class NavigationBarView extends LinearLayout {
     private String mIMEKeyLayout;
     private boolean showingIME;
     private int mButtonLayouts;
-    private int mCurrentLayout = 0; //the first one
+    private int mCurrentLayout = 1; // Default
 
     // workaround for LayoutTransitions leaving the nav buttons in a weird state (bug 5549288)
     final static boolean WORKAROUND_INVALID_LAYOUT = true;
@@ -273,14 +275,17 @@ public class NavigationBarView extends LinearLayout {
 
         mLegacyMenu = Settings.System.getInt(cr, Settings.System.NAVIGATION_BAR_SIDEKEYS, 1) == 1;
         mArrows = Settings.System.getInt(cr, Settings.System.NAVIGATION_BAR_ARROWS, 0) == 1;
+        mButtonContainerString_1 = Settings.System.getString(cr, Settings.System.NAVIGATION_BAR_BUTTONS);
         mButtonLayouts = Settings.System.getInt(cr, Settings.System.NAVIGATION_BAR_ALTERNATE_LAYOUTS, 1);
-
-        for(int i=0;i<mButtonLayouts;i++)
-            mButtonContainerStrings[i] = Settings.System.getString(cr, buttonSettings[i]);
-
-        if (mButtonLayouts == 1)
-            mCurrentLayout = 0; //1; -- 1 is not the first thing in "computer"
-
+        if (mButtonLayouts > 1) {
+            mRightStopKey = mButtonLayouts + 1;
+            mButtonContainerString_2 = Settings.System.getString(cr, Settings.System.NAVIGATION_BAR_BUTTONS_TWO);
+            mButtonContainerString_3 = Settings.System.getString(cr, Settings.System.NAVIGATION_BAR_BUTTONS_THREE);
+            mButtonContainerString_4 = Settings.System.getString(cr, Settings.System.NAVIGATION_BAR_BUTTONS_FOUR);
+            mButtonContainerString_5 = Settings.System.getString(cr, Settings.System.NAVIGATION_BAR_BUTTONS_FIVE);
+        } else {
+            mCurrentLayout = 1;
+        }
         mIMEKeyLayout = Settings.System.getString(cr, Settings.System.NAVIGATION_IME_LAYOUT);
 
         mCameraDisabledByDpm = isCameraDisabledByDpm();
@@ -483,15 +488,19 @@ public class NavigationBarView extends LinearLayout {
     };
 
     public void notifyLayoutChange(int direction) {
-        // modulus -- always positive edition
-        mCurrentLayout = (mCurrentLayout + direction + mButtonLayouts) % mButtonLayouts;
+        mCurrentLayout = (mCurrentLayout + direction);
         mHandler.post(mNotifyLayoutChanged);
     }
 
     final Runnable mNotifyLayoutChanged = new Runnable() {
         @Override
         public void run() {
-            loadButtonArrays();
+            if (mCurrentLayout <= 0) {
+                mCurrentLayout = mButtonLayouts;
+            } else if (mCurrentLayout >= mRightStopKey) {
+                mCurrentLayout = 1;
+            }
+            setupNavigationButtons();
         }
     };
 
@@ -675,19 +684,36 @@ public class NavigationBarView extends LinearLayout {
             mSettingsObserver = new ContentObserver(new Handler()) {
                 @Override
                 public void onChange(boolean selfChange) {
+                    mButtonContainerString_1 = Settings.System.getString(r, Settings.System.NAVIGATION_BAR_BUTTONS);
                     mArrows = Settings.System.getInt(r, Settings.System.NAVIGATION_BAR_ARROWS, 0) == 1;
                     mLegacyMenu = Settings.System.getInt(r, Settings.System.NAVIGATION_BAR_SIDEKEYS, 1) == 1;
                     mIMEKeyLayout = Settings.System.getString(r, Settings.System.NAVIGATION_IME_LAYOUT);
                     mButtonLayouts = Settings.System.getInt(r, Settings.System.NAVIGATION_BAR_ALTERNATE_LAYOUTS, 1);
-
-                    for(int i=0;i<mButtonLayouts;i++)
-                        mButtonContainerStrings[i] = Settings.System.getString(r, buttonSettings[i]);
-
-                    notifyLayoutChange(0);
+                    if (mButtonLayouts > 1) {
+                        mRightStopKey = mButtonLayouts + 1;
+                        mButtonContainerString_2 = Settings.System.getString(r, Settings.System.NAVIGATION_BAR_BUTTONS_TWO);
+                        mButtonContainerString_3 = Settings.System.getString(r, Settings.System.NAVIGATION_BAR_BUTTONS_THREE);
+                        mButtonContainerString_4 = Settings.System.getString(r, Settings.System.NAVIGATION_BAR_BUTTONS_FOUR);
+                        mButtonContainerString_5 = Settings.System.getString(r, Settings.System.NAVIGATION_BAR_BUTTONS_FIVE);
+                    }
+                    if (mCurrentLayout > mButtonLayouts) {
+                        mCurrentLayout = mButtonLayouts;
+                    } else {
+                        mCurrentLayout = 1;
+                    }
+                    loadButtonArrays();
                 }};
 
-            for(int i=0;i<5;i++)
-                r.registerContentObserver(Settings.System.getUriFor(buttonSettings[i]), false, mSettingsObserver);
+            r.registerContentObserver(Settings.System.getUriFor(Settings.System.NAVIGATION_BAR_BUTTONS),
+                    false, mSettingsObserver);
+            r.registerContentObserver(Settings.System.getUriFor(Settings.System.NAVIGATION_BAR_BUTTONS_TWO),
+                    false, mSettingsObserver);
+            r.registerContentObserver(Settings.System.getUriFor(Settings.System.NAVIGATION_BAR_BUTTONS_THREE),
+                    false, mSettingsObserver);
+            r.registerContentObserver(Settings.System.getUriFor(Settings.System.NAVIGATION_BAR_BUTTONS_FOUR),
+                    false, mSettingsObserver);
+            r.registerContentObserver(Settings.System.getUriFor(Settings.System.NAVIGATION_BAR_BUTTONS_FIVE),
+                    false, mSettingsObserver);
             r.registerContentObserver(Settings.System.getUriFor(Settings.System.NAVIGATION_BAR_SIDEKEYS),
                     false, mSettingsObserver);
             r.registerContentObserver(Settings.System.getUriFor(Settings.System.NAVIGATION_BAR_ARROWS),
@@ -743,35 +769,54 @@ public class NavigationBarView extends LinearLayout {
     }
 
     private void loadButtonArrays() {
-
+        String[] userButtons = {};
+        String newButtons = "";
         // load active navbar layouts
         mAllButtonContainers.clear();
 
         for (int j = 0; j < mButtonLayouts; j++) {
-            if (mButtonContainerStrings[j] == null) {
-                mButtonContainerStrings[j] = AwesomeConstants.defaultNavbarLayout(mContext);
+            switch (j) {
+                case 0:
+                    newButtons = mButtonContainerString_1;
+                    break;
+                case 1:
+                    newButtons = mButtonContainerString_2;
+                    break;
+                case 2:
+                    newButtons = mButtonContainerString_3;
+                    break;
+                case 3:
+                    newButtons = mButtonContainerString_4;
+                    break;
+                case 4:
+                    newButtons = mButtonContainerString_5;
+                    break;
             }
-            mAllButtonContainers.add(getButtonsArray(mButtonContainerStrings[j].split("\\|")));
+            if (newButtons == null) {
+                newButtons = AwesomeConstants.defaultNavbarLayout(mContext);
+            }
+            userButtons = newButtons.split("\\|");;
+            mAllButtonContainers.add(getButtonsArray(userButtons));
         }
         // load special case IME layout
         if (mArrows) {
             mIMEKeyArray.clear();
-            if (mIMEKeyLayout == null) {
-                mIMEKeyLayout = AwesomeConstants.defaultIMEKeyLayout(mContext);
+            if (userButtons == null) {
+                userButtons = AwesomeConstants.defaultIMEKeyLayout(mContext).split("\\|");
             }
-            final String[] userButtons = mIMEKeyLayout.split("\\|");
+            userButtons = mIMEKeyLayout.split("\\|");
             for (String button : userButtons) {
-                final String[] actions = button.split(",", 4);
+                String[] actions = button.split(",", 4);
                 mIMEKeyArray.add(new KeyButtonInfo(actions[0], actions[1], actions[2], actions[3]));
             }
         }
         setupNavigationButtons();
     }
 
-    private ArrayList<KeyButtonInfo> getButtonsArray(final String[] userButtons) {
-        final ArrayList<KeyButtonInfo> mButtonsContainer = new ArrayList<KeyButtonInfo>();
+    private ArrayList<KeyButtonInfo> getButtonsArray(String[] userButtons) {
+        ArrayList<KeyButtonInfo> mButtonsContainer = new ArrayList<KeyButtonInfo>();
         for (String button : userButtons) {
-            final String[] actions = button.split(",", 4);
+            String[] actions = button.split(",", 4);
             mButtonsContainer.add(new KeyButtonInfo(actions[0], actions[1], actions[2], actions[3]));
         }
         return mButtonsContainer;
@@ -779,7 +824,7 @@ public class NavigationBarView extends LinearLayout {
 
     private ArrayList<KeyButtonInfo> getCurrentButtonArray() {
         if (mArrows && showingIME) return mIMEKeyArray;
-        return mAllButtonContainers.get(mCurrentLayout);
+        return mAllButtonContainers.get(mCurrentLayout - 1);
     }
 
     private void setupNavigationButtons() {
