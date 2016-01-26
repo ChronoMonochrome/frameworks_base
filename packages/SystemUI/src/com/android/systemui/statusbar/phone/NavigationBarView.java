@@ -347,7 +347,6 @@ public class NavigationBarView extends LinearLayout {
     // used for lockscreen notifications
     public View getNotifsButton() {
         return mCurrentView.findViewById(R.id.show_notifs);
-        mBarTransitions.updateResources(res);
     }
 
     @Override
