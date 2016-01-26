@@ -311,7 +311,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
     // on-screen navigation buttons
     private NavigationBarView mNavigationBarView = null;
     private int mNavigationBarWindowState = WINDOW_STATE_SHOWING;
-    private boolean mNavbarRequired;
 
     // member to store notification alpha
     private int mAlpha = 255;
@@ -714,7 +713,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         loadDimens();
 
         mIconSize = res.getDimensionPixelSize(com.android.internal.R.dimen.status_bar_icon_size);
-        mNavbarRequired = res.getBoolean(com.android.internal.R.bool.config_showNavigationBar);
         final boolean isMultiSimEnabled = MSimTelephonyManager.getDefault().isMultiSimEnabled();
 
         if (isMultiSimEnabled) {
@@ -1266,11 +1264,8 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
     }
 
     private void prepareNavigationBarView() {
-        if (mNavbarRequired) {
-            mNavigationBarView.reorient();
-        } else {
-            mNavigationBarView.inflateForHardwareDevice(mNavigationIconHints);
-        }
+        mNavigationBarView.setIMEState(showingIME);
+        mNavigationBarView.reorient();
 
         if (mNavigationBarView.getRecentsButton() != null) {
             mNavigationBarView.getRecentsButton().setOnClickListener(mRecentsClickListener);
@@ -2676,7 +2671,12 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         mNavigationIconHints = hints;
 
         if (mNavigationBarView != null) {
-            mNavigationBarView.setNavigationIconHints(hints);
+            boolean nav = true;
+            try {
+                nav = mWindowManagerService.needsNavigationBar();
+            } catch(RemoteException re) {
+            }
+            mNavigationBarView.setNavigationIconHints(hints, !nav);
         }
         checkBarModes();
     }
