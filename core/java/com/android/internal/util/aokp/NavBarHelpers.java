@@ -43,8 +43,7 @@ public class NavBarHelpers {
             AwesomeConstant.ACTION_ARROW_UP,
             AwesomeConstant.ACTION_ARROW_DOWN,
             /* these are just not implemented yet: */
-            AwesomeConstant.ACTION_WIDGETS,
-            AwesomeConstant.ACTION_APP_WINDOW
+            AwesomeConstant.ACTION_WIDGETS
     };
 
     private NavBarHelpers() {

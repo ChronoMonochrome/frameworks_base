@@ -57,7 +57,7 @@ public class CreateShortcut extends LauncherActivity {
         String c = className.substring(className.lastIndexOf(".") + 1);
 
         if (c.equals("Torch")) {
-            return R.drawable.ic_sysbar_torch;
+            return R.drawable.ic_qs_torch_on;
         } else if (c.equals ("ScreenShotAction")) {
             return R.drawable.ic_sysbar_screenshot;
         } else if (c.equals ("FlushMemory")) {

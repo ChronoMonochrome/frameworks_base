@@ -55,6 +55,7 @@ import com.android.internal.statusbar.IStatusBarService;
 import java.net.URISyntaxException;
 import java.util.List;
 
+import com.android.internal.util.cm.TorchConstants;
 import static com.android.internal.util.aokp.AwesomeConstants.AwesomeConstant;
 import static com.android.internal.util.aokp.AwesomeConstants.fromString;
 import com.vanir.util.TaskUtils;
@@ -122,7 +123,10 @@ public class AwesomeAction {
                 case ACTION_POWER:
                     triggerVirtualKeypress(KeyEvent.KEYCODE_POWER, STANDARD_FLAGS);
                     break;
-
+                case ACTION_TORCH:
+                    Intent intentTorch = new Intent(TorchConstants.ACTION_TOGGLE_STATE);
+                    mContext.sendBroadcast(intentTorch);
+                    break;
                 case ACTION_LAST_APP:
                     TaskUtils.toggleLastApp(mContext);
                     break;
