@@ -25,7 +25,6 @@ import android.app.ActivityManagerNative;
 import android.app.StatusBarManager;
 import android.app.admin.DevicePolicyManager;
 import android.content.BroadcastReceiver;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -78,6 +77,7 @@ public class NavigationBarView extends LinearLayout {
     final Display mDisplay;
     View mCurrentView = null;
     View[] mRotatedViews = new View[4];
+    private LockPatternUtils mLockUtils;
     
     int mBarSize;
     boolean mVertical;
@@ -95,9 +95,6 @@ public class NavigationBarView extends LinearLayout {
     private ArrayList<AwesomeButtonInfo> mNavButtons = new ArrayList<AwesomeButtonInfo>();
 
     private ContentObserver mSettingsObserver;
-    private ContentObserver mDisablePrefsObserver;
-
-    private LockPatternUtils mLockPatternUtils;
 
     boolean mWasNotifsButtonVisible = false;
 
@@ -252,7 +249,8 @@ public class NavigationBarView extends LinearLayout {
 
         mCameraDisabledByDpm = isCameraDisabledByDpm();
         watchForDevicePolicyChanges();
-        updateNavbarDisabledForPrefs();
+
+        mLockUtils = new LockPatternUtils(context);
     }
 
     private void watchForDevicePolicyChanges() {
@@ -447,7 +445,6 @@ public class NavigationBarView extends LinearLayout {
             }
         }
 
-<<<<<<< HEAD
         final boolean showSearch = disableHome && !disableSearch &&
                 Settings.System.getInt(mContext.getContentResolver(),
                         Settings.System.ENABLE_NAVIGATION_RING, 1) == 1;
@@ -460,29 +457,12 @@ public class NavigationBarView extends LinearLayout {
                     Settings.System.ACTIVE_NOTIFICATIONS, 0) == 1
             && Settings.System.getInt(mContext.getContentResolver(),
                     Settings.System.ACTIVE_NOTIFICATIONS_PRIVACY_MODE, 0) == 0;
-=======
-        final boolean showSearch = disableHome && !disableSearch && mPrefNavring;
-        final boolean showCamera = showSearch && !mCameraDisabledByDpm && mLockPatternUtils.getCameraEnabled();
-        final boolean showNotifs = showSearch && mPrefLockscreen;
->>>>>>> 0ca5399... NavigationBarView: Reduce getInt instances occuring in setDisabledFlags()
 
         setVisibleOrGone(getSearchLight(), showSearch);
         setVisibleOrGone(getCameraButton(), showCamera);
         setVisibleOrGone(getNotifsButton(), showNotifs && mWasNotifsButtonVisible);
 
         mBarTransitions.applyBackButtonQuiescentAlpha(mBarTransitions.getMode(), true /*animate*/);
-    }
-
-    private void updateNavbarDisabledForPrefs() {
-        final ContentResolver r = mContext.getContentResolver();
-        mPrefLockscreen = Settings.System.getInt(r,
-                    Settings.System.LOCKSCREEN_NOTIFICATIONS, 0) == 1
-            && Settings.System.getInt(r,
-                    Settings.System.ACTIVE_NOTIFICATIONS, 0) == 1
-            && Settings.System.getInt(r,
-                    Settings.System.ACTIVE_NOTIFICATIONS_PRIVACY_MODE, 0) == 0;
-        mPrefNavring = Settings.System.getInt(r,
-                    Settings.System.ENABLE_NAVIGATION_RING, 1) == 1;
     }
 
     private void setVisibleOrInvisible(View view, boolean visible) {
@@ -567,8 +547,6 @@ public class NavigationBarView extends LinearLayout {
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
 
-        final ContentResolver r = mContext.getContentResolver();
-
         if (mSettingsObserver == null) {
             mSettingsObserver = new ContentObserver(new Handler()) {
                 @Override
@@ -577,24 +555,8 @@ public class NavigationBarView extends LinearLayout {
                     setupNavigationButtons();
                 }};
 
-            r.registerContentObserver(Settings.System.getUriFor(Settings.System.NAVIGATION_BAR_BUTTONS),
+            mContext.getContentResolver().registerContentObserver(Settings.System.getUriFor(Settings.System.NAVIGATION_BAR_BUTTONS),
                 false, mSettingsObserver);
-        }
-        if (mDisablePrefsObserver == null) {
-            mDisablePrefsObserver = new ContentObserver(new Handler()) {
-                @Override
-                public void onChange(boolean selfChange) {
-                    updateNavbarDisabledForPrefs();
-                }};
-
-            r.registerContentObserver(Settings.System.getUriFor(Settings.System.LOCKSCREEN_NOTIFICATIONS),
-                false, mDisablePrefsObserver);
-            r.registerContentObserver(Settings.System.getUriFor(Settings.System.ENABLE_NAVIGATION_RING),
-                false, mDisablePrefsObserver);
-            r.registerContentObserver(Settings.System.getUriFor(Settings.System.ACTIVE_NOTIFICATIONS),
-                false, mDisablePrefsObserver);
-            r.registerContentObserver(Settings.System.getUriFor(Settings.System.ACTIVE_NOTIFICATIONS_PRIVACY_MODE),
-                false, mDisablePrefsObserver);
         }
     }
 
@@ -602,15 +564,9 @@ public class NavigationBarView extends LinearLayout {
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
 
-        final ContentResolver r = mContext.getContentResolver();
-
         if (mSettingsObserver != null) {
-            r.unregisterContentObserver(mSettingsObserver);
+            mContext.getContentResolver().unregisterContentObserver(mSettingsObserver);
             mSettingsObserver = null;
-        }
-        if (mDisablePrefsObserver != null) {
-            r.unregisterContentObserver(mDisablePrefsObserver);
-            mDisablePrefsObserver = null;
         }
     }
 
