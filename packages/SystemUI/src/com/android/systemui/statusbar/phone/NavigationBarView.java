@@ -90,7 +90,7 @@ public class NavigationBarView extends LinearLayout {
     private float mButtonWidth, mMenuButtonWidth;
     private int mMenuButtonId;
 
-    final boolean mTablet = isTablet(mContext);
+    final boolean mTablet = isTablet(getContext());
 
     private ArrayList<AwesomeButtonInfo> mNavButtons = new ArrayList<AwesomeButtonInfo>();
 
@@ -450,11 +450,11 @@ public class NavigationBarView extends LinearLayout {
                         Settings.System.ENABLE_NAVIGATION_RING, 1) == 1;
         final boolean showCamera = showSearch && !mCameraDisabledByDpm
                 && mLockUtils.getCameraEnabled();
-        final boolean showNotifs = disableHome && !disableSearch &&
+        final boolean showNotifs = showSearch &&
             Settings.System.getInt(mContext.getContentResolver(),
-                    Settings.System.LOCKSCREEN_NOTIFICATIONS, 0) == 1
+                    Settings.System.LOCKSCREEN_NOTIFICATIONS, 1) == 1
             && Settings.System.getInt(mContext.getContentResolver(),
-                    Settings.System.ACTIVE_NOTIFICATIONS, 0) == 1
+                    Settings.System.ACTIVE_NOTIFICATIONS, 1) == 1
             && Settings.System.getInt(mContext.getContentResolver(),
                     Settings.System.ACTIVE_NOTIFICATIONS_PRIVACY_MODE, 0) == 0;
 
@@ -570,7 +570,7 @@ public class NavigationBarView extends LinearLayout {
         }
     }
 
-    private void setupNavigationButtons() {
+    private void updateUserConfig() {
         mNavButtons.clear();
 
         if (mUserButtons == null || mUserButtons.isEmpty()) {
@@ -607,7 +607,10 @@ public class NavigationBarView extends LinearLayout {
                 }
             }
         }
+    }
 
+    private void setupNavigationButtons() {
+        updateUserConfig();
         final boolean stockThreeButtonLayout = mNavButtons.size() == 3;
         int separatorSize = (int) mMenuButtonWidth;
 
@@ -641,7 +644,7 @@ public class NavigationBarView extends LinearLayout {
             for (int j = 0; j < mNavButtons.size(); j++) {
                 // create the button
                 AwesomeButtonInfo info = mNavButtons.get(j);
-                KeyButtonView button = new KeyButtonView(mContext, null);
+                KeyButtonView button = new KeyButtonView(getContext(), null);
                 button.setButtonActions(info);
                 if (mTablet) {
                     if (mNavButtons.size() <= 4) {
@@ -686,7 +689,7 @@ public class NavigationBarView extends LinearLayout {
             // legacy menu button
             AwesomeButtonInfo menuButtonInfo = new AwesomeButtonInfo(AwesomeConstant.ACTION_MENU.value(),
                     null, null, null);
-            KeyButtonView menuButton = new KeyButtonView(mContext, null);
+            KeyButtonView menuButton = new KeyButtonView(getContext(), null);
             menuButton.setButtonActions(menuButtonInfo);
             menuButton.setImageResource(R.drawable.ic_sysbar_menu);
             menuButton.setLayoutParams(getLayoutParams(landscape, mMenuButtonWidth, 0f));
