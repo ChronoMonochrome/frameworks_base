@@ -43,10 +43,8 @@ import android.speech.RecognizerIntent;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.InputDevice;
-import android.view.IWindowManager;
 import android.view.KeyCharacterMap;
 import android.view.KeyEvent;
-import android.view.WindowManagerGlobal;
 import android.widget.Toast;
 
 import com.android.internal.R;
@@ -58,15 +56,11 @@ import java.util.List;
 import com.android.internal.util.cm.TorchConstants;
 import static com.android.internal.util.aokp.AwesomeConstants.AwesomeConstant;
 import static com.android.internal.util.aokp.AwesomeConstants.fromString;
-import com.vanir.util.TaskUtils;
 
 public class AwesomeAction {
 
-    public static final String TAG = "AwesomeAction";
-    public static final String NULL_ACTION = AwesomeConstant.ACTION_NULL.value();
-
-    private static final int STANDARD_FLAGS = KeyEvent.FLAG_FROM_SYSTEM | KeyEvent.FLAG_VIRTUAL_HARD_KEY;
-    private static final int CURSOR_FLAGS = KeyEvent.FLAG_SOFT_KEYBOARD | KeyEvent.FLAG_KEEP_TOUCH_MODE;
+    public final static String TAG = "AwesomeAction";
+    private final static String SysUIPackage = "com.android.systemui";
 
     private static boolean wtf = true;
     private static boolean ftw;
@@ -75,39 +69,38 @@ public class AwesomeAction {
     }
 
     public static boolean launchAction(final Context mContext, final String action) {
-        if (TextUtils.isEmpty(action) || action.equals(NULL_ACTION)) {
+        if (TextUtils.isEmpty(action) || action.equals(AwesomeConstant.ACTION_NULL.value())) {
             return false;
         }
             AwesomeConstant AwesomeEnum = fromString(action);
             AudioManager am;
             switch (AwesomeEnum) {
-                case ACTION_HOME:
-                    IWindowManager mWindowManagerService = WindowManagerGlobal.getWindowManagerService();
+                case ACTION_RECENTS:
                     try {
-                        mWindowManagerService.sendHomeAction();
+                        IStatusBarService.Stub.asInterface(
+                                ServiceManager.getService(mContext.STATUS_BAR_SERVICE))
+                                .toggleRecentApps();
                     } catch (RemoteException e) {
-                        Log.e(TAG, "HOME ACTION FAILED");
+                        // let it go.
                     }
                     break;
-
+                case ACTION_HOME:
+                    injectKeyDelayed(KeyEvent.KEYCODE_HOME);
+                    break;
                 case ACTION_BACK:
-                    triggerVirtualKeypress(KeyEvent.KEYCODE_BACK, STANDARD_FLAGS);
+                    injectKeyDelayed(KeyEvent.KEYCODE_BACK);
                     break;
-
                 case ACTION_MENU:
-                    triggerVirtualKeypress(KeyEvent.KEYCODE_MENU, STANDARD_FLAGS);
+                    injectKeyDelayed(KeyEvent.KEYCODE_MENU);
                     break;
-
                 case ACTION_SEARCH:
-                    triggerVirtualKeypress(KeyEvent.KEYCODE_SEARCH, STANDARD_FLAGS);
+                    injectKeyDelayed(KeyEvent.KEYCODE_SEARCH);
                     break;
-
                 case ACTION_KILL:
                     Toast.makeText(mContext, R.string.app_killed_message, Toast.LENGTH_SHORT).show();
                     KillTask mKillTask = new KillTask(mContext);
                     mHandler.post(mKillTask);
                     break;
-
                 case ACTION_ASSIST:
                     Intent intent = new Intent(Intent.ACTION_ASSIST);
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -119,18 +112,16 @@ public class AwesomeAction {
                     intentVoice.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     mContext.startActivity(intentVoice);
                     break;
-
                 case ACTION_POWER:
-                    triggerVirtualKeypress(KeyEvent.KEYCODE_POWER, STANDARD_FLAGS);
+                    injectKeyDelayed(KeyEvent.KEYCODE_POWER);
                     break;
                 case ACTION_TORCH:
                     Intent intentTorch = new Intent(TorchConstants.ACTION_TOGGLE_STATE);
                     mContext.sendBroadcast(intentTorch);
                     break;
                 case ACTION_LAST_APP:
-                    TaskUtils.toggleLastApp(mContext);
+                    toggleLastApp(mContext);
                     break;
-
                 case ACTION_NOTIFICATIONS:
                     if (wtf) {
                         if (!ftw) {
@@ -162,7 +153,6 @@ public class AwesomeAction {
                         }
                     }
                     break;
-
                 case ACTION_APP:
                     try {
                         Intent intentapp = Intent.parseUri(action, 0);
@@ -173,33 +163,12 @@ public class AwesomeAction {
                     } catch (ActivityNotFoundException e) {
                         Log.e(TAG, "ActivityNotFound: [" + action + "]");
                     }
-                    break;
-
+                break;
                 case ACTION_APP_WINDOW:
                     Intent appWindow = new Intent();
                     appWindow.setAction("com.android.systemui.ACTION_SHOW_APP_WINDOW");
                     mContext.sendBroadcast(appWindow);
-                    break;
-
-                case ACTION_BLANK:
-                    break;
-
-                case ACTION_ARROW_LEFT:
-                    triggerVirtualKeypress(KeyEvent.KEYCODE_DPAD_LEFT, CURSOR_FLAGS);
-                    break;
-
-                case ACTION_ARROW_RIGHT:
-                    triggerVirtualKeypress(KeyEvent.KEYCODE_DPAD_RIGHT, CURSOR_FLAGS);
-                    break;
-
-                case ACTION_ARROW_UP:
-                    triggerVirtualKeypress(KeyEvent.KEYCODE_DPAD_UP, CURSOR_FLAGS);
-                    break;
-
-                case ACTION_ARROW_DOWN:
-                    triggerVirtualKeypress(KeyEvent.KEYCODE_DPAD_DOWN, CURSOR_FLAGS);
-                    break;
-
+                break;
                 case ACTION_VIB:
                     am = (AudioManager) mContext.getSystemService(Context.AUDIO_SERVICE);
                     if (am != null) {
@@ -221,12 +190,10 @@ public class AwesomeAction {
                         }
                     }
                     break;
-
                 case ACTION_IME:
                     mContext.sendBroadcast(new Intent(
                             "android.settings.SHOW_INPUT_METHOD_PICKER"));
                     break;
-
                 case ACTION_SILENT:
                     am = (AudioManager) mContext.getSystemService(Context.AUDIO_SERVICE);
                     if (am != null) {
@@ -243,7 +210,6 @@ public class AwesomeAction {
                         }
                     }
                     break;
-
                 case ACTION_SILENT_VIB:
                     am = (AudioManager) mContext.getSystemService(Context.AUDIO_SERVICE);
                     if (am != null) {
@@ -268,17 +234,61 @@ public class AwesomeAction {
                     }
                     break;
                 }
-                break;
-
-            case GESTURE_ACTIONS:
-                mContext.sendBroadcast(new Intent(Intent.TOGGLE_GESTURE_ACTIONS));
-                break;
-        }
         return true;
     }
 
+    public static boolean isIntentAvailable(Context context, Intent intent) {
+        PackageManager packageManager = context.getPackageManager();
+        List<ResolveInfo> list = packageManager.queryIntentActivities(intent,
+                PackageManager.MATCH_DEFAULT_ONLY);
+        return list.size() > 0;
+    }
+
+    private static void injectKeyDelayed(int keycode) {
+        KeyUp onInjectKey_Up = new KeyUp(keycode);
+        KeyDown onInjectKey_Down = new KeyDown(keycode);
+        mHandler.removeCallbacks(onInjectKey_Down);
+        mHandler.removeCallbacks(onInjectKey_Up);
+        mHandler.post(onInjectKey_Down);
+        mHandler.postDelayed(onInjectKey_Up, 10);
+    }
+
+    public static class KeyDown implements Runnable {
+        private int mInjectKeyCode;
+
+        public KeyDown(int keycode) {
+            this.mInjectKeyCode = keycode;
+        }
+
+        public void run() {
+            final KeyEvent ev = new KeyEvent(SystemClock.uptimeMillis(),
+                    SystemClock.uptimeMillis(),
+                    KeyEvent.ACTION_DOWN, mInjectKeyCode, 0, 0, KeyCharacterMap.VIRTUAL_KEYBOARD,
+                    0,
+                    KeyEvent.FLAG_FROM_SYSTEM, InputDevice.SOURCE_KEYBOARD);
+            InputManager.getInstance().injectInputEvent(ev,
+                    InputManager.INJECT_INPUT_EVENT_MODE_ASYNC);
+        }
+    }
+
+    public static class KeyUp implements Runnable {
+        private int mInjectKeyCode;
+
+        public KeyUp(int keycode) {
+            this.mInjectKeyCode = keycode;
+        }
+
+        public void run() {
+            final KeyEvent ev = new KeyEvent(SystemClock.uptimeMillis(),
+                    SystemClock.uptimeMillis(),
+                    KeyEvent.ACTION_UP, mInjectKeyCode, 0, 0, KeyCharacterMap.VIRTUAL_KEYBOARD, 0,
+                    KeyEvent.FLAG_FROM_SYSTEM, InputDevice.SOURCE_KEYBOARD);
+            InputManager.getInstance().injectInputEvent(ev,
+                    InputManager.INJECT_INPUT_EVENT_MODE_ASYNC);
+        }
+    }
+
     public static class KillTask implements Runnable {
-        private final static String SysUIPackage = "com.android.systemui";
         private Context mContext;
 
         public KillTask(Context context) {
@@ -292,39 +302,50 @@ public class AwesomeAction {
             String defaultHomePackage = "com.android.launcher";
             intent.addCategory(Intent.CATEGORY_HOME);
             final ResolveInfo res = mContext.getPackageManager().resolveActivity(intent, 0);
-
             if (res.activityInfo != null && !res.activityInfo.packageName.equals("android")) {
                 defaultHomePackage = res.activityInfo.packageName;
             }
-
             RunningTaskInfo info = am.getRunningTasks(1).get(0);
             String packageName = info.topActivity.getPackageName();
-
-            if (SysUIPackage.equals(packageName)) return; // don't kill SystemUI
+            if (SysUIPackage.equals(packageName))
+                return; // don't kill SystemUI
             if (!defaultHomePackage.equals(packageName)) {
+                // am.forceStopPackage(packageName);
                 am.removeTask(info.id, ActivityManager.REMOVE_TASK_KILL_PROCESS);
+                // Toast.makeText(mContext,
+                // com.android.internal.R.string.app_killed_message,
+                // Toast.LENGTH_SHORT).show();
             }
         }
     }
 
-    public static boolean isIntentAvailable(Context context, Intent intent) {
-        PackageManager packageManager = context.getPackageManager();
-        List<ResolveInfo> list = packageManager.queryIntentActivities(intent,
-                PackageManager.MATCH_DEFAULT_ONLY);
-        return list.size() > 0;
-    }
-
-    private static void triggerVirtualKeypress(final int keyCode, int flags) {
-        InputManager im = InputManager.getInstance();
-        long now = SystemClock.uptimeMillis();
-
-        final KeyEvent downEvent = new KeyEvent(now, now, KeyEvent.ACTION_DOWN,
-                keyCode, 0, 0, KeyCharacterMap.VIRTUAL_KEYBOARD, 0,
-                flags, InputDevice.SOURCE_KEYBOARD);
-        final KeyEvent upEvent = KeyEvent.changeAction(downEvent, KeyEvent.ACTION_UP);
-
-        im.injectInputEvent(downEvent, InputManager.INJECT_INPUT_EVENT_MODE_ASYNC);
-        im.injectInputEvent(upEvent, InputManager.INJECT_INPUT_EVENT_MODE_ASYNC);
+    private static void toggleLastApp(Context mContext) {
+        int lastAppId = 0;
+        int looper = 1;
+        String packageName;
+        final Intent intent = new Intent(Intent.ACTION_MAIN);
+        final ActivityManager am = (ActivityManager) mContext
+                .getSystemService(Activity.ACTIVITY_SERVICE);
+        String defaultHomePackage = "com.android.launcher";
+        intent.addCategory(Intent.CATEGORY_HOME);
+        final ResolveInfo res = mContext.getPackageManager().resolveActivity(intent, 0);
+        if (res.activityInfo != null && !res.activityInfo.packageName.equals("android")) {
+            defaultHomePackage = res.activityInfo.packageName;
+        }
+        List<ActivityManager.RunningTaskInfo> tasks = am.getRunningTasks(5);
+        // lets get enough tasks to find something to switch to
+        // Note, we'll only get as many as the system currently has - up to 5
+        while ((lastAppId == 0) && (looper < tasks.size())) {
+            packageName = tasks.get(looper).topActivity.getPackageName();
+            if (!packageName.equals(defaultHomePackage)
+                    && !packageName.equals("com.android.systemui")) {
+                lastAppId = tasks.get(looper).id;
+            }
+            looper++;
+        }
+        if (lastAppId != 0) {
+            am.moveTaskToFront(lastAppId, am.MOVE_TASK_NO_USER_ACTION);
+        }
     }
 
     private static Handler mHandler = new Handler() {
