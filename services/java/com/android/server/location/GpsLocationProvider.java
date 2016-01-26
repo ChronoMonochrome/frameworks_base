@@ -593,7 +593,14 @@ public class GpsLocationProvider implements LocationProviderInterface {
     }
 
     private void handleUpdateNetworkState(int state, NetworkInfo info) {
-        mNetworkAvailable = (state == LocationProvider.AVAILABLE);
+
+	/*
+	 * Meticulus:
+	 * If GPS is not on then bail out of here!
+         */
+        LocationManager manager = (LocationManager) mContext.getSystemService( Context.LOCATION_SERVICE );
+        if ( !manager.isProviderEnabled( LocationManager.GPS_PROVIDER ) )
+            return;
 
         if (DEBUG) {
             Log.d(TAG, "updateNetworkState " + (mNetworkAvailable ? "available" : "unavailable")
