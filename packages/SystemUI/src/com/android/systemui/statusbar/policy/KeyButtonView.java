@@ -20,7 +20,6 @@ import android.animation.Animator;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.content.Context;
-import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.RectF;
 import android.graphics.drawable.BitmapDrawable;
@@ -70,7 +69,6 @@ public class KeyButtonView extends ImageView {
     long mDownTime;
     long mUpTime;
     int mTouchSlop;
-    int mGlowBgId;
     Drawable mGlowBG;
     int mGlowWidth, mGlowHeight;
     float mGlowAlpha = 0f, mGlowScale = 1f;
@@ -493,7 +491,6 @@ public class KeyButtonView extends ImageView {
     }
 
     public void setGlowBackground(int resId) {
-        mGlowBgId = resId;
         mGlowBG = getResources().getDrawable(resId);
         if (mGlowBG != null) {
             setDrawingAlpha(mDrawingAlpha);
