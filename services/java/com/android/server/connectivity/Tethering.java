@@ -86,7 +86,7 @@ public class Tethering extends INetworkManagementEventObserver.Stub {
     private Context mContext;
     private Context mUiContext;
     private final static String TAG = "Tethering";
-    private final static boolean DBG = true;
+    private final static boolean DBG = false;
     private final static boolean VDBG = false;
 
     /* Intent to indicate change in upstream interface change */
