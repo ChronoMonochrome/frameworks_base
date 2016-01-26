@@ -2043,10 +2043,6 @@
 
   <java-symbol type="array" name="config_ignored_sms_packages" />
 
-  <!-- Last app switch animations -->
-   <java-symbol type="anim" name="last_app_in" />
-   <java-symbol type="anim" name="last_app_out" />
-
   <!-- USB OTG Notification -->
   <java-symbol type="string" name="usb_storage_notification_manage_message" />
 
