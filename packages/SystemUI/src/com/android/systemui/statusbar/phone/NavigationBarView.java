@@ -94,7 +94,17 @@ public class NavigationBarView extends LinearLayout {
 
     private ArrayList<AwesomeButtonInfo> mNavButtons = new ArrayList<AwesomeButtonInfo>();
 
-    private ContentObserver mSettingsObserver;
+    private ContentObserver mSettingsObserver = new ContentObserver(new Handler()) {
+        @Override
+        public void onChange(boolean selfChange) {
+            setupNavigationButtons();
+        }
+
+        @Override
+        public void onChange(boolean selfChange, Uri uri) {
+            setupNavigationButtons();
+        }
+    };
 
     boolean mWasNotifsButtonVisible = false;
 
@@ -541,26 +551,15 @@ public class NavigationBarView extends LinearLayout {
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
 
-        if (mSettingsObserver == null) {
-            mSettingsObserver = new ContentObserver(new Handler()) {
-                @Override
-                public void onChange(boolean selfChange) {
-                    setupNavigationButtons();
-                }};
-
-            mContext.getContentResolver().registerContentObserver(Settings.System.getUriFor(Settings.System.NAVIGATION_BAR_BUTTONS),
+        mContext.getContentResolver().registerContentObserver(Settings.System.getUriFor(Settings.System.NAVIGATION_BAR_BUTTONS),
                 false, mSettingsObserver);
-        }
     }
 
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
 
-        if (mSettingsObserver != null) {
-            mContext.getContentResolver().unregisterContentObserver(mSettingsObserver);
-            mSettingsObserver = null;
-        }
+        mContext.getContentResolver().unregisterContentObserver(mSettingsObserver);
     }
 
     private void readUserConfig() {
