@@ -27,7 +27,7 @@
     <string name="toggle_profile_toast">Profiles are currently disabled</string>
     <string name="toggle_dream">Screensaver</string>
     <string name="toggle_dream_failed">Dreams are off or disabled</string>
-    <string name="action_power">Screen off</string>
+    <string name="toggle_torch">Torch</string>
     <string name="toggle_flushmemory">Free memory</string>
     <string name="toggle_immersive">Immersive mode</string>
     <string name="toggle_ring_vib">Ring/Vib - toggle</string>
