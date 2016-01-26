@@ -350,10 +350,6 @@ public class NavigationBarView extends LinearLayout {
         return mCurrentView.findViewWithTag(AwesomeConstant.ACTION_LAYOUT_RIGHT.value());
     }
 
-    public View getMenuButtonFromString() {
-        return mCurrentView.findViewWithTag(AwesomeConstant.ACTION_MENU.value());
-    }
-
     public View getMenuButton() {
         return mCurrentView.findViewById(mMenuButtonId);
     }
@@ -642,11 +638,7 @@ public class NavigationBarView extends LinearLayout {
 
         if (mButtonLayouts > 1 && mLegacyMenu) {
             if (getRightLayoutButton() != null) {
-                ((LayoutChangerButtonView) getRightLayoutButton()).setMenuAction(
-                        mShowMenu, getResources().getConfiguration().orientation, mTablet);
-            } else if (getMenuButtonFromString() != null) {
-                ((LayoutChangerButtonView) getMenuButtonFromString()).setMenuAction(
-                        mShowMenu, getResources().getConfiguration().orientation, mTablet);
+                ((LayoutChangerButtonView) getRightLayoutButton()).setMenuAction(mShowMenu, isVertical(), mTablet);
             }
         } else {
             if (getMenuButton() != null) {
