@@ -319,10 +319,6 @@ public class NavigationBarView extends LinearLayout {
         return mCurrentView.findViewWithTag(AwesomeConstant.ACTION_BACK.value());
     }
 
-    public View getEmptySpace() {
-        return mCurrentView.findViewWithTag(AwesomeConstant.ACTION_BLANK.value());
-    }
-
     public View getHomeButton() {
         return mCurrentView.findViewWithTag(AwesomeConstant.ACTION_HOME.value());
     }
@@ -663,11 +659,7 @@ public class NavigationBarView extends LinearLayout {
 
                 // add button
                 addButton(navButtons, button, landscape);
-                if (button != getEmptySpace()) {
-                    addLightsOutButton(lightsOut, button, landscape, false);
-                } else {
-                    addSeparator(lightsOut, landscape, (int) mButtonWidth, 0.5f);
-                }
+                addLightsOutButton(lightsOut, button, landscape, false);
 
                 if (!mTablet && stockThreeButtonLayout && j != (mNavButtons.size() - 1)) {
                     // in the case of a 'stock' 3-button layout, the buttons need to be spaced further out apart
