@@ -77,17 +77,13 @@ public class KeyButtonView extends ImageView {
     @ViewDebug.ExportedProperty(category = "drawing")
     float mDrawingAlpha = 1f;
     @ViewDebug.ExportedProperty(category = "drawing")
-    float mQuiescentAlpha;
+    float mQuiescentAlpha = DEFAULT_QUIESCENT_ALPHA;
     RectF mRect = new RectF();
     AnimatorSet mPressedAnim;
     Animator mAnimateToQuiescent = new ObjectAnimator();
     boolean mShouldClick = true;
 
     KeyButtonInfo mActions;
-
-    protected float getQuiescentAlphaScale() {
-        return 1.0f;
-    }
 
     protected static IStatusBarService mBarService;
     public static synchronized void getStatusBarInstance() {
@@ -126,8 +122,6 @@ public class KeyButtonView extends ImageView {
 
     public KeyButtonView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs);
-
-        mQuiescentAlpha = getQuiescentAlphaScale() * DEFAULT_QUIESCENT_ALPHA;
 
         setDrawingAlpha(mQuiescentAlpha);
         if (mGlowBG != null) {
@@ -227,7 +221,7 @@ public class KeyButtonView extends ImageView {
         mAnimateToQuiescent.cancel();
         alpha = Math.min(Math.max(alpha, 0), 1);
         if (alpha == mQuiescentAlpha && alpha == mDrawingAlpha) return;
-        mQuiescentAlpha = getQuiescentAlphaScale() * alpha;
+        mQuiescentAlpha = alpha;
         if (DEBUG) Log.d(TAG, "New quiescent alpha = " + mQuiescentAlpha);
         if (mGlowBG != null && animate) {
             mAnimateToQuiescent = animateToQuiescent();
@@ -418,7 +412,7 @@ public class KeyButtonView extends ImageView {
         return true;
     }
 
-    protected void doSinglePress() {
+    private void doSinglePress() {
         if (callOnClick()) {
             // cool
             sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_CLICKED);
@@ -436,6 +430,7 @@ public class KeyButtonView extends ImageView {
         if (mActions != null) {
             if (mActions.singleAction != null) {
                 AwesomeAction.launchAction(mContext, mActions.singleAction);
+                sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_CLICKED);
             }
         }
     }

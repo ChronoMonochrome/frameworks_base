@@ -38,19 +38,33 @@ import com.android.systemui.R;
 
 public class LayoutChangerButtonView extends KeyButtonView {
     private static final String TAG = "StatusBar.LayoutChangerButtonView";
-
     public static final String ACTION_MENU = AwesomeConstant.ACTION_MENU.value();
     public static final String LAYOUT_RIGHT = AwesomeConstant.ACTION_LAYOUT_RIGHT.value();
 
-    private static final float ALPHA_SCALE = 0.5f; //the default alpha is 0.7... this view was intended to have 0.3 alpha. 0.3 ~= 0.35 == 0.5 * 0.7
+    final float GLOW_MAX_SCALE_FACTOR = 1.8f;
+    public static final float LAYOUT_CHANGER_QUIESCENT_ALPHA = 0.30f;
+
+    int mTouchSlop;
+    final float mQuiescentAlpha = LAYOUT_CHANGER_QUIESCENT_ALPHA;
+    float mDrawingAlpha = 1f;
+    AnimatorSet mPressedAnim;
+    Animator mAnimateToQuiescent = new ObjectAnimator();
+    AnimatorSet as = mPressedAnim = new AnimatorSet();
+
+    KeyButtonInfo mActions;
 
     public LayoutChangerButtonView(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
     public LayoutChangerButtonView(Context context, AttributeSet attrs, int defStyle) {
-        super(context, attrs, defStyle);
-        mGlowBgId = 0;
+        super(context, attrs);
+
+        setDrawingAlpha(mQuiescentAlpha);
+
+        setClickable(true);
+        mTouchSlop = ViewConfiguration.get(context).getScaledTouchSlop();
+        setLongClickable(false);
     }
 
     @Override
@@ -78,12 +92,27 @@ public class LayoutChangerButtonView extends KeyButtonView {
     @Override
     public void setImage(final Resources res) { }
 
-    @Override
-    public float getQuiescentAlphaScale() {
-        return ALPHA_SCALE;
+    public void setQuiescentAlpha(float alpha, boolean animate) {
+        setDrawingAlpha(mQuiescentAlpha);
     }
 
-    @Override
+    private ObjectAnimator animateToQuiescent() {
+        return ObjectAnimator.ofFloat(this, "drawingAlpha", mQuiescentAlpha);
+    }
+
+    public float getQuiescentAlpha() {
+        return mQuiescentAlpha;
+    }
+
+    public float getDrawingAlpha() {
+        return mDrawingAlpha;
+    }
+
+    public void setDrawingAlpha(float x) {
+        setAlpha((int) (x * 255));
+        mDrawingAlpha = x;
+    }
+
     public boolean onTouchEvent(MotionEvent ev) {
         final int action = ev.getAction();
         switch (action) {
@@ -113,11 +142,11 @@ public class LayoutChangerButtonView extends KeyButtonView {
         return true;
     }
 
-    @Override
-    protected void doSinglePress() {
+    private void doSinglePress() {
         if (callOnClick()) {
             sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_CLICKED);
         }
         AwesomeAction.launchAction(mContext, mActions.singleAction);
+        sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_CLICKED);
     }
 }
