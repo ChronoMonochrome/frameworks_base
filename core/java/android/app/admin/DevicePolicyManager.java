@@ -1237,12 +1237,6 @@ public class DevicePolicyManager {
     public static final int KEYGUARD_DISABLE_SECURE_CAMERA = 1 << 1;
 
     /**
-     * Disable the application widget on keyguard screens (e.g. PIN/Pattern/Password)
-     * @hide
-     */
-    public static final int KEYGUARD_DISABLE_APPLICATION_WIDGET = 1 << 2;
-
-    /**
      * Disable all current and future keyguard customizations.
      */
     public static final int KEYGUARD_DISABLE_FEATURES_ALL = 0x7fffffff;

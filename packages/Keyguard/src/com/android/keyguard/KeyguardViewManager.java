@@ -23,7 +23,6 @@ import android.graphics.drawable.TransitionDrawable;
 
 import android.telephony.TelephonyManager;
 import android.util.DisplayMetrics;
-import android.util.Pair;
 import android.view.Gravity;
 import android.view.WindowManagerPolicy;
 import android.widget.LinearLayout;
@@ -1080,15 +1079,9 @@ public class KeyguardViewManager {
         }
     }
 
-    public void dispatchCameraEvent(MotionEvent event) {
+    public void dispatch(MotionEvent event) {
         if (mKeyguardView != null) {
-            mKeyguardView.dispatchCameraEvent(event);
-        }
-    }
-
-    public void dispatchApplicationWidgetEvent(MotionEvent event) {
-        if (mKeyguardView != null) {
-            mKeyguardView.dispatchApplicationWidgetEvent(event);
+            mKeyguardView.dispatch(event);
         }
     }
 
@@ -1099,17 +1092,6 @@ public class KeyguardViewManager {
     public void launchCamera() {
         if (mKeyguardView != null) {
             mKeyguardView.launchCamera();
-        }
-    }
-
-    public void launchApplicationWidget() {
-        if (mKeyguardView != null) {
-            Pair<String, byte[]> applicationWidget =
-                    KeyguardUpdateMonitor.getInstance(mContext).getApplicationWidgetDetails();
-            if (applicationWidget.first != null) {
-                String packageName = applicationWidget.first;
-                mKeyguardView.launchApplicationWidget(packageName);
-            }
         }
     }
 

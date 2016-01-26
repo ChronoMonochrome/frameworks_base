@@ -41,11 +41,9 @@ interface IKeyguardService {
     oneway void doKeyguardTimeout(in Bundle options);
     oneway void setCurrentUser(int userId);
     oneway void showAssistant();
-    oneway void dispatchCameraEvent(in MotionEvent event);
-    oneway void dispatchApplicationWidgetEvent(in MotionEvent event);
+    oneway void dispatch(in MotionEvent event);
     oneway void dispatchButtonClick(int buttonId);
     oneway void launchCamera();
-    oneway void launchApplicationWidget();
     oneway void onBootCompleted();
     oneway void setBackgroundBitmap();
 }
