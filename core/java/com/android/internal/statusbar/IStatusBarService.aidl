@@ -36,7 +36,6 @@ interface IStatusBarService
     void animateNotificationsOrSettingsPanel();
     void setCurrentUser(int newUserId);
     void setButtonDrawable(int buttonId, int iconId);
-    void notifyLayoutChange(int direction);
 
     // ---- Methods below are for use by the status bar policy services ----
     // You need the STATUS_BAR_SERVICE permission

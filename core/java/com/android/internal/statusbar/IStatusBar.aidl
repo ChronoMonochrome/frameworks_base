@@ -41,5 +41,4 @@ oneway interface IStatusBar
     void cancelPreloadRecentApps();
     void setWindowState(int window, int state);
     void setButtonDrawable(int buttonId, int iconId);
-    void notifyLayoutChange(int direction);
 }

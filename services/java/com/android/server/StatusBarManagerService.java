@@ -383,14 +383,6 @@ public class StatusBarManagerService extends IStatusBarService.Stub
         });
     }
 
-    public void notifyLayoutChange(int direction) {
-        if (mBar != null) {
-            try {
-                mBar.notifyLayoutChange(direction);
-            } catch (RemoteException ex) { }
-        }
-    }
-
     @Override
     public void toggleRecentApps() {
         if (mBar != null) {
