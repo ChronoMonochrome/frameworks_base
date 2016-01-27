@@ -307,35 +307,20 @@ static jbyteArray android_media_MediaMetadataRetriever_getEmbeddedPicture(
         jniThrowException(env, "java/lang/IllegalStateException", "No retriever available");
         return NULL;
     }
-    MediaAlbumArt* mediaAlbumArt = NULL;
+   // MediaAlbumArt* mediaAlbumArt = NULL;
 
     // FIXME:
     // Use pictureType to retrieve the intended embedded picture and also change
     // the method name to getEmbeddedPicture().
-    sp<IMemory> albumArtMemory = retriever->extractAlbumArt();
-    if (albumArtMemory != 0) {  // cast the shared structure to a MediaAlbumArt object
-        mediaAlbumArt = static_cast<MediaAlbumArt *>(albumArtMemory->pointer());
-    }
-    if (mediaAlbumArt == NULL) {
+    ///sp<IMemory> albumArtMemory = retriever->extractAlbumArt();
+   // i//f (albumArtMemory != 0) {  // cast the shared structure to a MediaAlbumArt object
+      //  mediaAlbumArt = static_cast<MediaAlbumArt *>(albumArtMemory->pointer());
+    //}/
+    //if (mediaAlbumArt == NULL) {
         ALOGE("getEmbeddedPicture: Call to getEmbeddedPicture failed.");
         return NULL;
-    }
+   // }
 
-    unsigned int len = mediaAlbumArt->mSize;
-    char* data = (char*) mediaAlbumArt + sizeof(MediaAlbumArt);
-    jbyteArray array = env->NewByteArray(len);
-    if (!array) {  // OutOfMemoryError exception has already been thrown.
-        ALOGE("getEmbeddedPicture: OutOfMemoryError is thrown.");
-    } else {
-        jbyte* bytes = env->GetByteArrayElements(array, NULL);
-        if (bytes != NULL) {
-            memcpy(bytes, data, len);
-            env->ReleaseByteArrayElements(array, bytes, 0);
-        }
-    }
-
-    // No need to delete mediaAlbumArt here
-    return array;
 }
 
 static jobject android_media_MediaMetadataRetriever_extractMetadata(JNIEnv *env, jobject thiz, jint keyCode)

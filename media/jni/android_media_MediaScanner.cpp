@@ -347,11 +347,11 @@ android_media_MediaScanner_extractAlbumArt(
     }
 
     int fd = jniGetFDFromFileDescriptor(env, fileDescriptor);
-    char* data = mp->extractAlbumArt(fd);
-    if (!data) {
+////    char* data = mp->extractAlbumArt(fd);
+  //  if (!data) {
         return NULL;
-    }
-    long len = *((long*)data);
+    //}
+/*    long len = *((long*)data);
 
     jbyteArray array = env->NewByteArray(len);
     if (array != NULL) {
@@ -367,6 +367,7 @@ done:
     // return null in that case.
     env->ExceptionClear();
     return array;
+*/
 }
 
 // This function gets a field ID, which in turn causes class initialization.

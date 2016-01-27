@@ -378,7 +378,7 @@ android_media_MediaPlayer_pause(JNIEnv *env, jobject thiz)
         jniThrowException(env, "java/lang/IllegalStateException", NULL);
         return;
     }
-    process_media_player_call( env, thiz, mp->pause(), NULL, NULL );
+    //process_media_player_call( env, thiz, mp->pause(), NULL, NULL );
 }
 
 static jboolean
@@ -822,9 +822,9 @@ android_media_MediaPlayer_suspend(JNIEnv *env, jobject thiz)
         return false;
     }
 
-    if (mp->suspend() != OK) {
+    //if (mp->suspend() != OK) {
         return false;
-    }
+   // }
 
     return true;
 }
@@ -838,9 +838,9 @@ android_media_MediaPlayer_resume(JNIEnv *env, jobject thiz)
         return false;
     }
 
-    if (mp->resume() != OK) {
+    //if (mp->resume() != OK) {
         return false;
-    }
+   // }
 
     return true;
 }

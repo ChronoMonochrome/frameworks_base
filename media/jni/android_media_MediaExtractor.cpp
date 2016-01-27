@@ -650,7 +650,7 @@ static void android_media_MediaExtractor_native_init(JNIEnv *env) {
     gFields.cryptoInfoSetID =
         env->GetMethodID(clazz, "set", "(I[I[I[B[BI)V");
 
-    DataSource::RegisterDefaultSniffers();
+//    DataSource::RegisterDefaultSniffers();
 }
 
 static void android_media_MediaExtractor_native_setup(
