@@ -122,6 +122,7 @@ android_media_MediaMetadataRetriever_setDataSourceAndHeaders(
             env, keys, values, &headersVector)) {
         return;
     }
+/*
     process_media_retriever_call(
             env,
             retriever->setDataSource(
@@ -129,6 +130,7 @@ android_media_MediaMetadataRetriever_setDataSourceAndHeaders(
 
             "java/lang/RuntimeException",
             "setDataSource failed");
+*/
 }
 
 static void android_media_MediaMetadataRetriever_setDataSourceFD(JNIEnv *env, jobject thiz, jobject fileDescriptor, jlong offset, jlong length)

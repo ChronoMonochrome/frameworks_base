@@ -136,15 +136,15 @@ JMediaExtractor::~JMediaExtractor() {
 
 status_t JMediaExtractor::setDataSource(
         const char *path, const KeyedVector<String8, String8> *headers) {
-    return mImpl->setDataSource(path, headers);
+    return NULL;//mImpl->setDataSource(path, headers);
 }
 
 status_t JMediaExtractor::setDataSource(int fd, off64_t offset, off64_t size) {
-    return mImpl->setDataSource(fd, offset, size);
+    return NULL;//mImpl->setDataSource(fd, offset, size);
 }
 
 status_t JMediaExtractor::setDataSource(const sp<DataSource> &datasource) {
-    return mImpl->setDataSource(datasource);
+    return NULL;//mImpl->setDataSource(datasource);
 }
 
 size_t JMediaExtractor::countTracks() const {
@@ -686,6 +686,8 @@ static void android_media_MediaExtractor_setDataSource(
         return;
     }
 
+	return;
+/*
     status_t err = extractor->setDataSource(path, &headers);
 
     env->ReleaseStringUTFChars(pathObj, path);
@@ -698,6 +700,7 @@ static void android_media_MediaExtractor_setDataSource(
                 "Failed to instantiate extractor.");
         return;
     }
+*/
 }
 
 static void android_media_MediaExtractor_setDataSourceFd(
@@ -716,7 +719,8 @@ static void android_media_MediaExtractor_setDataSourceFd(
     }
 
     int fd = jniGetFDFromFileDescriptor(env, fileDescObj);
-
+return;
+/*
     status_t err = extractor->setDataSource(fd, offset, length);
 
     if (err != OK) {
@@ -726,6 +730,7 @@ static void android_media_MediaExtractor_setDataSourceFd(
                 "Failed to instantiate extractor.");
         return;
     }
+*/
 }
 
 static void android_media_MediaExtractor_setDataSourceCallback(
@@ -744,7 +749,8 @@ static void android_media_MediaExtractor_setDataSourceCallback(
     }
 
     sp<JavaDataSourceBridge> bridge = new JavaDataSourceBridge(env, callbackObj);
-    status_t err = extractor->setDataSource(bridge);
+    status_t err = !OK;
+	//status_t err = extractor->setDataSource(bridge);
 
     if (err != OK) {
         jniThrowException(

@@ -217,6 +217,8 @@ android_media_MediaPlayer_setDataSourceAndHeaders(
         return;
     }
 
+    return;
+/*
     status_t opStatus =
         mp->setDataSource(
                 pathStr,
@@ -225,6 +227,7 @@ android_media_MediaPlayer_setDataSourceAndHeaders(
     process_media_player_call(
             env, thiz, opStatus, "java/io/IOException",
             "setDataSource failed." );
+*/
 }
 
 static void
@@ -242,7 +245,7 @@ android_media_MediaPlayer_setDataSourceFD(JNIEnv *env, jobject thiz, jobject fil
     }
     int fd = jniGetFDFromFileDescriptor(env, fileDescriptor);
     ALOGV("setDataSourceFD: fd %d", fd);
-    process_media_player_call( env, thiz, mp->setDataSource(fd, offset, length), "java/io/IOException", "setDataSourceFD failed." );
+    //process_media_player_call( env, thiz, mp->setDataSource(fd, offset, length), "java/io/IOException", "setDataSourceFD failed." );
 }
 
 static sp<IGraphicBufferProducer>
@@ -856,8 +859,8 @@ android_media_MediaPlayer_updateProxyConfig(
     }
 
     if (proxyProps == NULL) {
-        thisplayer->updateProxyConfig(
-                NULL /* host */, 0 /* port */, NULL /* exclusionList */);
+        //thisplayer->updateProxyConfig(
+        //        NULL /* host */, 0 /* port */, NULL /* exclusionList */);
     } else {
         jstring hostObj = (jstring)env->CallObjectMethod(
                 proxyProps, fields.proxyConfigGetHost);
@@ -873,15 +876,15 @@ android_media_MediaPlayer_updateProxyConfig(
             const char *exclusionList = env->GetStringUTFChars(exclusionListObj, NULL);
 
             if (exclusionList != NULL) {
-                thisplayer->updateProxyConfig(host, port, exclusionList);
+                //thisplayer->updateProxyConfig(host, port, exclusionList);
 
                 env->ReleaseStringUTFChars(exclusionListObj, exclusionList);
                 exclusionList = NULL;
             } else {
-                thisplayer->updateProxyConfig(host, port, "");
+                //thisplayer->updateProxyConfig(host, port, "");
             }
         } else if (host != NULL) {
-            thisplayer->updateProxyConfig(host, port, "");
+            //thisplayer->updateProxyConfig(host, port, "");
         }
 
         if (host != NULL) {
