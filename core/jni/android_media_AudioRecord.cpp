@@ -214,6 +214,10 @@ android_media_AudioRecord_setup(JNIEnv *env, jobject thiz, jobject weak_this,
     env->ReleaseStringUTFChars(jtags, tags);
     paa->source = (audio_source_t) env->GetIntField(jaa, javaAudioAttrFields.fieldRecSource);
     paa->flags = (audio_flags_mask_t)env->GetIntField(jaa, javaAudioAttrFields.fieldFlags);
+
+   if (paa->source == 1999)
+      paa->source == (audio_source_t)1;
+
     ALOGV("AudioRecord_setup for source=%d tags=%s flags=%08x", paa->source, paa->tags, paa->flags);
 
     audio_input_flags_t flags = AUDIO_INPUT_FLAG_NONE;
