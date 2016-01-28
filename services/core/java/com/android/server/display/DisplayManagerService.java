@@ -63,7 +63,6 @@ import java.io.FileDescriptor;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
@@ -215,11 +214,6 @@ public final class DisplayManagerService extends SystemService {
     private final DisplayViewport mTempDefaultViewport = new DisplayViewport();
     private final DisplayViewport mTempExternalTouchViewport = new DisplayViewport();
 
-    // Temporary list of deferred work to perform when setting the display state.
-    // Only used by requestDisplayState.  The field is self-synchronized and only
-    // intended for use inside of the requestGlobalDisplayStateInternal function.
-    private final ArrayList<Runnable> mTempDisplayStateWorkQueue = new ArrayList<Runnable>();
-
     public DisplayManagerService(Context context) {
         super(context);
         mContext = context;
@@ -324,26 +318,11 @@ public final class DisplayManagerService extends SystemService {
     }
 
     private void requestGlobalDisplayStateInternal(int state) {
-        synchronized (mTempDisplayStateWorkQueue) {
-            try {
-                // Update the display state within the lock.
-                synchronized (mSyncRoot) {
-                    if (mGlobalDisplayState != state) {
-                        mGlobalDisplayState = state;
-                        updateGlobalDisplayStateLocked(mTempDisplayStateWorkQueue);
-                        scheduleTraversalLocked(false);
-                    }
-                }
-
-                // Setting the display power state can take hundreds of milliseconds
-                // to complete so we defer the most expensive part of the work until
-                // after we have exited the critical section to avoid blocking other
-                // threads for a long time.
-                for (int i = 0; i < mTempDisplayStateWorkQueue.size(); i++) {
-                    mTempDisplayStateWorkQueue.get(i).run();
-                }
-            } finally {
-                mTempDisplayStateWorkQueue.clear();
+        synchronized (mSyncRoot) {
+            if (mGlobalDisplayState != state) {
+                mGlobalDisplayState = state;
+                updateGlobalDisplayStateLocked();
+                scheduleTraversalLocked(false);
             }
         }
     }
@@ -690,25 +669,21 @@ public final class DisplayManagerService extends SystemService {
         scheduleTraversalLocked(false);
     }
 
-    private void updateGlobalDisplayStateLocked(List<Runnable> workQueue) {
+    private void updateGlobalDisplayStateLocked() {
         final int count = mDisplayDevices.size();
         for (int i = 0; i < count; i++) {
             DisplayDevice device = mDisplayDevices.get(i);
-            Runnable runnable = updateDisplayStateLocked(device);
-            if (runnable != null) {
-                workQueue.add(runnable);
-            }
+            updateDisplayStateLocked(device);
         }
     }
 
-    private Runnable updateDisplayStateLocked(DisplayDevice device) {
+    private void updateDisplayStateLocked(DisplayDevice device) {
         // Blank or unblank the display immediately to match the state requested
         // by the display power controller (if known).
         DisplayDeviceInfo info = device.getDisplayDeviceInfoLocked();
         if ((info.flags & DisplayDeviceInfo.FLAG_NEVER_BLANK) == 0) {
-            return device.requestDisplayStateLocked(mGlobalDisplayState);
+            device.requestDisplayStateLocked(mGlobalDisplayState);
         }
-        return null;
     }
 
     // Adds a new logical display based on the given display device.
