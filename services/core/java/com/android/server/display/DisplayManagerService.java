@@ -29,7 +29,7 @@ import android.hardware.display.DisplayViewport;
 import android.hardware.display.DisplayManagerInternal.DisplayTransactionListener;
 import android.hardware.display.IDisplayManager;
 import android.hardware.display.IDisplayManagerCallback;
-import android.hardware.display.IVirtualDisplayCallback;
+import android.hardware.display.IVirtualDisplayCallbacks;
 import android.hardware.display.WifiDisplayStatus;
 import android.hardware.input.InputManagerInternal;
 import android.media.projection.IMediaProjection;
@@ -491,7 +491,7 @@ public final class DisplayManagerService extends SystemService {
         }
     }
 
-    private int createVirtualDisplayInternal(IVirtualDisplayCallback callback,
+    private int createVirtualDisplayInternal(IVirtualDisplayCallbacks callbacks,
             IMediaProjection projection, int callingUid, String packageName,
             String name, int width, int height, int densityDpi, Surface surface, int flags) {
         synchronized (mSyncRoot) {
@@ -502,7 +502,7 @@ public final class DisplayManagerService extends SystemService {
             }
 
             DisplayDevice device = mVirtualDisplayAdapter.createVirtualDisplayLocked(
-                    callback, projection, callingUid, packageName,
+                    callbacks, projection, callingUid, packageName,
                     name, width, height, densityDpi, surface, flags);
             if (device == null) {
                 return -1;
@@ -517,7 +517,7 @@ public final class DisplayManagerService extends SystemService {
             // Something weird happened and the logical display was not created.
             Slog.w(TAG, "Rejecting request to create virtual display "
                     + "because the logical display was not created.");
-            mVirtualDisplayAdapter.releaseVirtualDisplayLocked(callback.asBinder());
+            mVirtualDisplayAdapter.releaseVirtualDisplayLocked(callbacks.asBinder());
             handleDisplayDeviceRemovedLocked(device);
         }
         return -1;
@@ -1251,14 +1251,14 @@ public final class DisplayManagerService extends SystemService {
         }
 
         @Override // Binder call
-        public int createVirtualDisplay(IVirtualDisplayCallback callback,
+        public int createVirtualDisplay(IVirtualDisplayCallbacks callbacks,
                 IMediaProjection projection, String packageName, String name,
                 int width, int height, int densityDpi, Surface surface, int flags) {
             final int callingUid = Binder.getCallingUid();
             if (!validatePackageName(callingUid, packageName)) {
                 throw new SecurityException("packageName must match the calling uid");
             }
-            if (callback == null) {
+            if (callbacks == null) {
                 throw new IllegalArgumentException("appToken must not be null");
             }
             if (TextUtils.isEmpty(name)) {
@@ -1306,7 +1306,7 @@ public final class DisplayManagerService extends SystemService {
 
             final long token = Binder.clearCallingIdentity();
             try {
-                return createVirtualDisplayInternal(callback, projection, callingUid,
+                return createVirtualDisplayInternal(callbacks, projection, callingUid,
                         packageName, name, width, height, densityDpi, surface, flags);
             } finally {
                 Binder.restoreCallingIdentity(token);
@@ -1314,31 +1314,31 @@ public final class DisplayManagerService extends SystemService {
         }
 
         @Override // Binder call
-        public void resizeVirtualDisplay(IVirtualDisplayCallback callback,
+        public void resizeVirtualDisplay(IVirtualDisplayCallbacks callbacks,
                 int width, int height, int densityDpi) {
             final long token = Binder.clearCallingIdentity();
             try {
-                resizeVirtualDisplayInternal(callback.asBinder(), width, height, densityDpi);
+                resizeVirtualDisplayInternal(callbacks.asBinder(), width, height, densityDpi);
             } finally {
                 Binder.restoreCallingIdentity(token);
             }
         }
 
         @Override // Binder call
-        public void setVirtualDisplaySurface(IVirtualDisplayCallback callback, Surface surface) {
+        public void setVirtualDisplaySurface(IVirtualDisplayCallbacks callbacks, Surface surface) {
             final long token = Binder.clearCallingIdentity();
             try {
-                setVirtualDisplaySurfaceInternal(callback.asBinder(), surface);
+                setVirtualDisplaySurfaceInternal(callbacks.asBinder(), surface);
             } finally {
                 Binder.restoreCallingIdentity(token);
             }
         }
 
         @Override // Binder call
-        public void releaseVirtualDisplay(IVirtualDisplayCallback callback) {
+        public void releaseVirtualDisplay(IVirtualDisplayCallbacks callbacks) {
             final long token = Binder.clearCallingIdentity();
             try {
-                releaseVirtualDisplayInternal(callback.asBinder());
+                releaseVirtualDisplayInternal(callbacks.asBinder());
             } finally {
                 Binder.restoreCallingIdentity(token);
             }

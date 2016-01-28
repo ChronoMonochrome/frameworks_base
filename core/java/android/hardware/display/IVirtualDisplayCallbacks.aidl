@@ -16,20 +16,20 @@
 package android.hardware.display;
 
 /** @hide */
-oneway interface IVirtualDisplayCallback {
+oneway interface IVirtualDisplayCallbacks {
     /**
      * Called when the virtual display video projection has been
      * paused by the system or when the surface has been detached
      * by the application by calling setSurface(null).
      * The surface will not receive any more buffers while paused.
      */
-    void onPaused();
+    void onDisplayPaused();
 
     /**
      * Called when the virtual display video projection has been
      * resumed after having been paused.
      */
-    void onResumed();
+    void onDisplayResumed();
 
     /**
      * Called when the virtual display video projection has been
@@ -37,5 +37,5 @@ oneway interface IVirtualDisplayCallback {
      * and it will never be resumed.  It is still the responsibility
      * of the application to release() the virtual display.
      */
-    void onStopped();
+    void onDisplayStopped();
 }
