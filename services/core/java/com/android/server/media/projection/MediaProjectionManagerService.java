@@ -406,7 +406,7 @@ public final class MediaProjectionManagerService extends SystemService
                     throw new IllegalStateException(
                             "Cannot start already started MediaProjection");
                 }
-                registerCallback(callback);
+                addCallback(callback);
                 try {
                     mToken = callback.asBinder();
                     mDeathEater = new IBinder.DeathRecipient() {
@@ -441,7 +441,7 @@ public final class MediaProjectionManagerService extends SystemService
         }
 
         @Override
-        public void registerCallback(IMediaProjectionCallback callback) {
+        public void addCallback(IMediaProjectionCallback callback) {
             if (callback == null) {
                 throw new IllegalArgumentException("callback must not be null");
             }
@@ -449,7 +449,7 @@ public final class MediaProjectionManagerService extends SystemService
         }
 
         @Override
-        public void unregisterCallback(IMediaProjectionCallback callback) {
+        public void removeCallback(IMediaProjectionCallback callback) {
             if (callback == null) {
                 throw new IllegalArgumentException("callback must not be null");
             }

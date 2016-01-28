@@ -40,7 +40,7 @@ import java.util.Map;
  *
  * <p>
  * A screen capture session can be started through {@link
- * MediaProjectionManager#createScreenCaptureIntent}. This grants the ability to
+ * MediaProjectionManager#getScreenCaptureIntent}. This grants the ability to
  * capture screen contents, but not system audio.
  * </p>
  */
@@ -70,9 +70,9 @@ public final class MediaProjection {
      * @param handler The handler on which the callback should be invoked, or
      * null if the callback should be invoked on the calling thread's looper.
      *
-     * @see #unregisterCallback
+     * @see #removeCallback
      */
-    public void registerCallback(Callback callback, Handler handler) {
+    public void addCallback(Callback callback, Handler handler) {
         if (callback == null) {
             throw new IllegalArgumentException("callback should not be null");
         }
@@ -83,9 +83,9 @@ public final class MediaProjection {
      *
      * @param callback The callback to unregister.
      *
-     * @see #registerCallback
+     * @see #addCallback
      */
-    public void unregisterCallback(Callback callback) {
+    public void removeCallback(Callback callback) {
         if (callback == null) {
             throw new IllegalArgumentException("callback should not be null");
         }

@@ -69,7 +69,7 @@ final class VirtualDisplayAdapter extends DisplayAdapter {
 
         try {
             if (projection != null) {
-                projection.registerCallback(new MediaProjectionCallback(appToken));
+                projection.addCallback(new MediaProjectionCallback(appToken));
             }
             appToken.linkToDeath(device, 0);
         } catch (RemoteException ex) {
