@@ -46,7 +46,7 @@ import java.util.Map;
 
 public class IpConfigStore {
     private static final String TAG = "IpConfigStore";
-    private static final boolean DBG = true;
+    private static final boolean DBG = false;
 
     protected final DelayedDiskWrite mWriter;
 
