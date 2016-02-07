@@ -27,8 +27,7 @@
 #include "jni.h"
 #include "JNIHelp.h"
 
-#include <gui/Surface.h>
-#include <gui/SurfaceTextureClient.h>
+#include <gui_legacy/Surface.h>
 
 #include <media/ICrypto.h>
 #include <media/stagefright/MediaCodec.h>
@@ -111,12 +110,12 @@ JMediaCodec::~JMediaCodec() {
 
 status_t JMediaCodec::configure(
         const sp<AMessage> &format,
-        const sp<ISurfaceTexture> &surfaceTexture,
+        const sp<IGraphicBufferProducer> &bufferProducer,
         const sp<ICrypto> &crypto,
         int flags) {
-    sp<SurfaceTextureClient> client;
-    if (surfaceTexture != NULL) {
-        mSurfaceTextureClient = new SurfaceTextureClient(surfaceTexture);
+    sp<Surface> client;
+    if (bufferProducer != NULL) {
+        mSurfaceTextureClient = new Surface(bufferProducer);
     } else {
         mSurfaceTextureClient.clear();
     }
@@ -368,11 +367,11 @@ static void android_media_MediaCodec_native_configure(
         return;
     }
 
-    sp<ISurfaceTexture> surfaceTexture;
+    sp<IGraphicBufferProducer> bufferProducer;
     if (jsurface != NULL) {
         sp<Surface> surface(android_view_Surface_getSurface(env, jsurface));
         if (surface != NULL) {
-            surfaceTexture = surface->getSurfaceTexture();
+            bufferProducer = surface->getIGraphicBufferProducer();
         } else {
             jniThrowException(
                     env,
@@ -387,7 +386,7 @@ static void android_media_MediaCodec_native_configure(
         crypto = JCrypto::GetCrypto(env, jcrypto);
     }
 
-    err = codec->configure(format, surfaceTexture, crypto, flags);
+    err = codec->configure(format, bufferProducer, crypto, flags);
 
     throwExceptionAsNecessary(env, err);
 }

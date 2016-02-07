@@ -18,10 +18,10 @@
 #define LOG_TAG "MediaRecorderJNI"
 #include <utils/Log.h>
 
-#include <gui/Surface.h>
+#include <gui_legacy/Surface.h>
 #include <camera/ICameraService.h>
 #include <camera/Camera.h>
-#include <media/mediarecorder.h>
+#include <media_legacy/mediarecorder.h>
 #include <stdio.h>
 #include <assert.h>
 #include <limits.h>
@@ -34,6 +34,7 @@
 #include "android_runtime/AndroidRuntime.h"
 
 #include <system/audio.h>
+#include <android_runtime/android_view_Surface.h>
 
 // ----------------------------------------------------------------------------
 
@@ -328,8 +329,8 @@ android_media_MediaRecorder_prepare(JNIEnv *env, jobject thiz)
             return;
         }
 
-        ALOGI("prepare: surface=%p (identity=%d)", native_surface.get(), native_surface->getIdentity());
-        if (process_media_recorder_call(env, mr->setPreviewSurface(native_surface), "java/lang/RuntimeException", "setPreviewSurface failed.")) {
+        ALOGI("prepare: surface=%p", native_surface.get());
+        if (process_media_recorder_call(env, mr->setPreviewSurface(native_surface->getIGraphicBufferProducer()), "java/lang/RuntimeException", "setPreviewSurface failed.")) {
             return;
         }
     }

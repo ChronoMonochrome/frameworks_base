@@ -29,6 +29,7 @@ LOCAL_SHARED_LIBRARIES := \
     libui \
     libcutils \
     libgui \
+    libgui_legacy \
     libstagefright \
     libstagefright_foundation \
     libcamera_client \

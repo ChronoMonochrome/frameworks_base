@@ -30,9 +30,9 @@ struct ALooper;
 struct AMessage;
 struct AString;
 struct ICrypto;
-struct ISurfaceTexture;
+struct IGraphicBufferProducer;
 struct MediaCodec;
-struct SurfaceTextureClient;
+class Surface;
 
 struct JMediaCodec : public RefBase {
     JMediaCodec(
@@ -43,7 +43,7 @@ struct JMediaCodec : public RefBase {
 
     status_t configure(
             const sp<AMessage> &format,
-            const sp<ISurfaceTexture> &surfaceTexture,
+            const sp<IGraphicBufferProducer> &bufferProducer,
             const sp<ICrypto> &crypto,
             int flags);
 
@@ -89,7 +89,7 @@ protected:
 private:
     jclass mClass;
     jweak mObject;
-    sp<SurfaceTextureClient> mSurfaceTextureClient;
+    sp<Surface> mSurfaceTextureClient;
 
     sp<ALooper> mLooper;
     sp<MediaCodec> mCodec;
