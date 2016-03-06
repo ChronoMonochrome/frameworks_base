@@ -19,6 +19,7 @@ package com.android.systemui.qs.tiles;
 import android.content.Intent;
 import android.provider.Settings;
 
+import android.provider.Settings;
 import com.android.systemui.R;
 import com.android.systemui.qs.QSTile;
 import com.android.systemui.statusbar.policy.KeyguardMonitor;
@@ -62,8 +63,16 @@ public class LocationTile extends QSTile<QSTile.BooleanState> {
 
     @Override
     protected void handleClick() {
-        final boolean wasEnabled = (Boolean) mState.value;
-        mController.setLocationEnabled(!wasEnabled);
+        final int locationMode = mLocationController.getLocationMode();
+        if (locationMode == Settings.Secure.LOCATION_MODE_HIGH_ACCURACY) {
+            mLocationController.setLocationMode(Settings.Secure.LOCATION_MODE_OFF);
+        } else if (locationMode == Settings.Secure.LOCATION_MODE_BATTERY_SAVING) {
+            mLocationController.setLocationMode(Settings.Secure.LOCATION_MODE_HIGH_ACCURACY);
+        } else if (locationMode == Settings.Secure.LOCATION_MODE_SENSORS_ONLY) {
+            mLocationController.setLocationMode(Settings.Secure.LOCATION_MODE_BATTERY_SAVING);
+        } else if (locationMode == Settings.Secure.LOCATION_MODE_OFF) {
+            mLocationController.setLocationMode(Settings.Secure.LOCATION_MODE_SENSORS_ONLY);
+        }
         mEnable.setAllowAnimation(true);
         mDisable.setAllowAnimation(true);
     }
@@ -76,6 +85,7 @@ public class LocationTile extends QSTile<QSTile.BooleanState> {
     @Override
     protected void handleUpdateState(BooleanState state, Object arg) {
         final boolean locationEnabled =  mController.isLocationEnabled();
+        final int locationMode = mController.getLocationMode();
 
         // Work around for bug 15916487: don't show location tile on top of lock screen. After the
         // bug is fixed, this should be reverted to only hiding it on secure lock screens:
@@ -84,12 +94,26 @@ public class LocationTile extends QSTile<QSTile.BooleanState> {
         state.value = locationEnabled;
         if (locationEnabled) {
             state.icon = mEnable;
-            state.label = mContext.getString(R.string.quick_settings_location_label);
-            state.contentDescription = mContext.getString(
-                    R.string.accessibility_quick_settings_location_on);
+            if (locationMode == Settings.Secure.LOCATION_MODE_HIGH_ACCURACY) {
+                state.label = mContext.getString(R.string.quick_settings_location_label_high_accuracy);
+                state.contentDescription = mContext.getString(
+                        R.string.accessibility_quick_settings_location_high_accuracy);
+            } else if (locationMode == Settings.Secure.LOCATION_MODE_BATTERY_SAVING) {
+                state.label = mContext.getString(R.string.quick_settings_location_label_battery_saving);
+                state.contentDescription = mContext.getString(
+                        R.string.accessibility_quick_settings_location_battery_saving);
+            } else if (locationMode == Settings.Secure.LOCATION_MODE_SENSORS_ONLY) {
+                state.label = mContext.getString(R.string.quick_settings_location_label_sensors_only);
+                state.contentDescription = mContext.getString(
+                        R.string.accessibility_quick_settings_location_sensors_only);
+            } else {
+                state.label = mContext.getString(R.string.quick_settings_location_label_on);
+                state.contentDescription = mContext.getString(
+                        R.string.accessibility_quick_settings_location_on);
+            }
         } else {
             state.icon = mDisable;
-            state.label = mContext.getString(R.string.quick_settings_location_label);
+            state.label = mContext.getString(R.string.quick_settings_location_label_off);
             state.contentDescription = mContext.getString(
                     R.string.accessibility_quick_settings_location_off);
         }

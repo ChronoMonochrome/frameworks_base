@@ -916,4 +916,14 @@
 
     <!-- Hide quick settings tile confirmation button -->
     <string name="quick_settings_reset_confirmation_button">Hide</string>
+
+    <!-- Advanced quick settings location tile -->
+    <string name="quick_settings_location_label_high_accuracy">High accuracy</string>
+    <string name="quick_settings_location_label_battery_saving">Battery saving</string>
+    <string name="quick_settings_location_label_sensors_only">Sensors only</string>
+    <string name="quick_settings_location_label_off">Off</string>
+    <string name="quick_settings_location_label_on">On</string>
+    <string name="accessibility_quick_settings_location_high_accuracy">Location reporting on in high accuracy mode</string>
+    <string name="accessibility_quick_settings_location_battery_saving">Location reporting on in battery saving mode</string>
+    <string name="accessibility_quick_settings_location_sensors_only">Location reporting on in sensors only mode</string>
 </resources>
