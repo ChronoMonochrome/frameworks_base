@@ -59,7 +59,7 @@ import java.util.ArrayList;
 @SystemApi
 public class VoiceInteractor {
     static final String TAG = "VoiceInteractor";
-    static final boolean DEBUG = true;
+    static final boolean DEBUG = false;
 
     final IVoiceInteractor mInteractor;
 

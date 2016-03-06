@@ -58,7 +58,7 @@ import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
  */
 public abstract class VoiceInteractionSession implements KeyEvent.Callback {
     static final String TAG = "VoiceInteractionSession";
-    static final boolean DEBUG = true;
+    static final boolean DEBUG = false;
 
     final Context mContext;
     final HandlerCaller mHandlerCaller;

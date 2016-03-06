@@ -157,7 +157,7 @@ import libcore.io.IoUtils;
 public class BackupManagerService {
 
     private static final String TAG = "BackupManagerService";
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
     private static final boolean MORE_DEBUG = false;
     private static final boolean DEBUG_SCHEDULING = MORE_DEBUG || true;
 
