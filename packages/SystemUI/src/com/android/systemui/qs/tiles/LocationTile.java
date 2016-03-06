@@ -63,15 +63,15 @@ public class LocationTile extends QSTile<QSTile.BooleanState> {
 
     @Override
     protected void handleClick() {
-        final int locationMode = mLocationController.getLocationMode();
+        final int locationMode = mController.getLocationMode();
         if (locationMode == Settings.Secure.LOCATION_MODE_HIGH_ACCURACY) {
-            mLocationController.setLocationMode(Settings.Secure.LOCATION_MODE_OFF);
+            mController.setLocationMode(Settings.Secure.LOCATION_MODE_OFF);
         } else if (locationMode == Settings.Secure.LOCATION_MODE_BATTERY_SAVING) {
-            mLocationController.setLocationMode(Settings.Secure.LOCATION_MODE_HIGH_ACCURACY);
+            mController.setLocationMode(Settings.Secure.LOCATION_MODE_HIGH_ACCURACY);
         } else if (locationMode == Settings.Secure.LOCATION_MODE_SENSORS_ONLY) {
-            mLocationController.setLocationMode(Settings.Secure.LOCATION_MODE_BATTERY_SAVING);
+            mController.setLocationMode(Settings.Secure.LOCATION_MODE_BATTERY_SAVING);
         } else if (locationMode == Settings.Secure.LOCATION_MODE_OFF) {
-            mLocationController.setLocationMode(Settings.Secure.LOCATION_MODE_SENSORS_ONLY);
+            mController.setLocationMode(Settings.Secure.LOCATION_MODE_SENSORS_ONLY);
         }
         mEnable.setAllowAnimation(true);
         mDisable.setAllowAnimation(true);
