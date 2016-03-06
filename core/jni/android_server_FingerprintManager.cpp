@@ -116,8 +116,8 @@ static jint nativeEnroll(JNIEnv* env, jobject clazz, jint timeout) {
 }
 
 static jint nativeEnrollCancel(JNIEnv* env, jobject clazz) {
-    ALOG(LOG_VERBOSE, LOG_TAG, "nativeEnrollCancel()\n");
-    int ret = gContext.device->enroll_cancel(gContext.device);
+    ALOG(LOG_VERBOSE, LOG_TAG, "nativeCancel()\n");
+    int ret = gContext.device->cancel(gContext.device);
     return reinterpret_cast<jint>(ret);
 }
 
