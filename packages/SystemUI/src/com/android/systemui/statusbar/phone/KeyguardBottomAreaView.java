@@ -44,6 +44,7 @@ import android.view.animation.Interpolator;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
+import com.android.internal.util.cm.LockscreenShortcutsHelper;
 import com.android.internal.widget.LockPatternUtils;
 import com.android.keyguard.KeyguardUpdateMonitor;
 import com.android.keyguard.KeyguardUpdateMonitorCallback;
@@ -330,6 +331,13 @@ public class KeyguardBottomAreaView extends FrameLayout implements View.OnClickL
     }
 
     public void launchCamera() {
+         Intent intent;
+         if (!mShortcutHelper.isTargetCustom(LockscreenShortcutsHelper.Shortcuts.RIGHT_SHORTCUT)) {
+             intent = getCameraIntent();
+         } else {
+             intent = mShortcutHelper.getIntent(LockscreenShortcutsHelper.Shortcuts.RIGHT_SHORTCUT);
+         }
+
         boolean wouldLaunchResolverActivity = PreviewInflater.wouldLaunchResolverActivity(
                 mContext, intent, mLockPatternUtils.getCurrentUser());
         if (intent == SECURE_CAMERA_INTENT && !wouldLaunchResolverActivity) {

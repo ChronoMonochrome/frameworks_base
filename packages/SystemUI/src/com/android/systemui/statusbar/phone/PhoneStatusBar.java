@@ -3437,8 +3437,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                 if (DEBUG_MEDIA_FAKE_ARTWORK) {
                     updateMediaMetaData(true);
                 }
-            } else if ("com.android.systemui.TOGGLE_FLASHLIGHT".equals(action)) {
-                mFlashlightController.toggleFlashlight();
             } else if (Intent.ACTION_KEYGUARD_WALLPAPER_CHANGED.equals(action)) {
                 updateMediaMetaData(true);
             }
